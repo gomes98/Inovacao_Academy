@@ -1,0 +1,5 @@
+declare module 'videojs-hls-quality-selector'
+declare module 'videojs-http-source-selector'
+declare module 'videojs-youtube'
+declare module 'videojs-vimeo'
+declare module 'videojs-contrib-quality-levels'

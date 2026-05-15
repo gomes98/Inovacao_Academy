@@ -97,17 +97,16 @@ async function toggleCompletion() {
   }
 }
 
-// Lógica de marcação automática (90% do vídeo)
 const autoMarked = ref(false)
 
+// Mark as finished logic remains the same, but triggered by component event
 async function markAsFinishedAuto() {
   if (isCompleted.value || autoMarked.value || isTogglingProgress.value) return
   
-  autoMarked.value = true // Evita múltiplas chamadas
+  autoMarked.value = true 
   isTogglingProgress.value = true
   
   try {
-    // Não passamos user_id para deixar o banco usar o default auth.uid()
     const { error } = await supabase.from('user_progress').upsert({
       content_id: contentId.value
     }, { onConflict: 'user_id,content_id' })
@@ -122,50 +121,11 @@ async function markAsFinishedAuto() {
   }
 }
 
-function onTimeUpdate(event: Event) {
-  const video = event.target as HTMLVideoElement
-  if (video.duration > 0) {
-    const progress = video.currentTime / video.duration
-    if (progress >= 0.9) {
-      markAsFinishedAuto()
-    }
-  }
-}
-
 // Reset flag ao mudar de aula
 watch(contentId, () => {
   autoMarked.value = false
   noteText.value = ''
 })
-
-// Suporte para YouTube API (opcional, caso usem iframe)
-const videoUrlWithApi = computed(() => {
-  let url = content.value?.video_url
-  if (!url) return ''
-  if (url.includes('youtube.com') || url.includes('youtu.be')) {
-    const separator = url.includes('?') ? '&' : '?'
-    return `${url}${separator}enablejsapi=1`
-  }
-  return url
-})
-
-// Listener para mensagens do YouTube IFrame API
-if (process.client) {
-  window.addEventListener('message', (event) => {
-    try {
-      const data = JSON.parse(event.data)
-      // O YouTube envia 'infoDelivery' periodicamente com o progresso
-      if (data.event === 'infoDelivery' && data.info?.currentTime && data.info?.duration) {
-        const progress = data.info.currentTime / data.info.duration
-        if (progress >= 0.9) {
-          markAsFinishedAuto()
-        }
-      }
-    } catch (e) {
-      // Ignora mensagens que não são JSON
-    }
-  })
-}
 
 // Estados para interação
 const newComment = ref('')
@@ -263,23 +223,12 @@ async function saveNote() {
           <div class="lg:col-span-3">
               <div class="aspect-video rounded-[32px] bg-black border border-white/10 overflow-hidden shadow-2xl relative group">
                 <template v-if="content?.video_url">
-                  <!-- Check if it's a YouTube/Vimeo link or a direct file -->
-                  <iframe 
-                    v-if="content.video_url.includes('youtube.com') || content.video_url.includes('youtu.be') || content.video_url.includes('vimeo.com')"
-                    :src="videoUrlWithApi"
-                    class="w-full h-full"
-                    frameborder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowfullscreen
-                  ></iframe>
-                  <video 
-                    v-else
-                    :src="content.video_url"
-                    class="w-full h-full"
-                    controls
-                    controlsList="nodownload"
-                    @timeupdate="onTimeUpdate"
-                  ></video>
+                  <ClientOnly>
+                    <VideoPlayer 
+                      :src="content.video_url"
+                      @progress-90="markAsFinishedAuto"
+                    />
+                  </ClientOnly>
                 </template>
                 <div v-else class="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-white/[0.02] to-white/[0.05]">
                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-white/10 mb-4"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>

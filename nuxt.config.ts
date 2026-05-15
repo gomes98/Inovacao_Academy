@@ -10,5 +10,27 @@ export default defineNuxtConfig({
       callback: '/confirm',
       exclude: [],
     }
+  },
+  build: {
+    transpile: [
+      'videojs-vimeo',
+      'videojs-youtube',
+      'videojs-contrib-quality-levels',
+      'videojs-hls-quality-selector'
+    ]
+  },
+  css: [
+    'video.js/dist/video-js.css'
+  ],
+  vite: {
+    optimizeDeps: {
+      include: [
+        'video.js',
+        'videojs-youtube',
+        'videojs-vimeo',
+        'videojs-contrib-quality-levels',
+        'videojs-hls-quality-selector'
+      ]
+    }
   }
 })
