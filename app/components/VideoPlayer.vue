@@ -52,7 +52,7 @@ function addQualityMenuButton() {
 
   const vjs = (window as any).videojs || videojs
   const ql = player.qualityLevels()
-  console.log('[QS] addQualityMenuButton called, levels:', ql?.length)
+  // console.log('[QS] addQualityMenuButton called, levels:', ql?.length)
   if (!ql || ql.length < 2) { console.warn('[QS] not enough levels:', ql?.length); return }
 
   const MenuItem = vjs.getComponent('MenuItem')
@@ -94,7 +94,7 @@ function addQualityMenuButton() {
         if (!qlRef) return []
         const heights = new Set<number>()
         for (let i = 0; i < qlRef.length; i++) {
-          console.log(`[QS] level ${i}:`, qlRef[i].width, 'x', qlRef[i].height, 'bandwidth:', qlRef[i].bandwidth)
+          // console.log(`[QS] level ${i}:`, qlRef[i].width, 'x', qlRef[i].height, 'bandwidth:', qlRef[i].bandwidth)
           if (qlRef[i].height) heights.add(qlRef[i].height)
         }
         const sorted = Array.from(heights).sort((a: number, b: number) => b - a)
@@ -115,7 +115,7 @@ function addQualityMenuButton() {
   if (controlBar.getChild('QualityMenuButton')) return
 
   controlBar.addChild('QualityMenuButton', { qualityLevels: ql }, controlBar.children().length - 1)
-  console.log('[QS] QualityMenuButton added to control bar')
+  // console.log('[QS] QualityMenuButton added to control bar')
 }
 
 function setupQualityTracking() {
@@ -123,13 +123,13 @@ function setupQualityTracking() {
   if (!player.qualityLevels) { console.warn('[QS] qualityLevels plugin not loaded'); return }
 
   const ql = player.qualityLevels()
-  console.log('[QS] qualityLevels already present:', ql.length)
+  // console.log('[QS] qualityLevels already present:', ql.length)
 
   let timer: ReturnType<typeof setTimeout> | null = null
 
   const tryAdd = () => {
     if (timer) clearTimeout(timer)
-    console.log('[QS] addqualitylevel fired, total:', ql.length)
+    // console.log('[QS] addqualitylevel fired, total:', ql.length)
     // Wait 200ms after the last addqualitylevel to ensure all levels are collected
     timer = setTimeout(() => {
       if (ql.length >= 2) addQualityMenuButton()
@@ -155,9 +155,9 @@ onMounted(async () => {
     try { await fn() } catch (e) { console.warn(`${name} failed to load:`, e) }
   }
 
-  await loadPlugin('videojs-youtube', () => import('videojs-youtube'))
-  await loadPlugin('videojs-vimeo', () => import('videojs-vimeo'))
-  await loadPlugin('videojs-contrib-quality-levels', () => import('videojs-contrib-quality-levels'))
+  // await loadPlugin('videojs-youtube', () => import('videojs-youtube'))
+  // await loadPlugin('videojs-vimeo', () => import('videojs-vimeo'))
+  // await loadPlugin('videojs-contrib-quality-levels', () => import('videojs-contrib-quality-levels'))
 
   isReady.value = true
 })
