@@ -211,6 +211,107 @@ async function saveContent(moduleId: string) {
   attachmentsUpload.value = []
   await refreshModules()
 }
+
+function getPathFromUrl(url: string, bucket: string) {
+  if (!url || !url.includes('.supabase.co/storage/v1/object/public/')) return null
+  const parts = url.split(`/public/${bucket}/`)
+  if (parts.length < 2) return null
+  const path = parts[1].split('?')[0] // Remove query params if any
+  return decodeURI(path)
+}
+
+async function deleteContent(content: any) {
+  if (!confirm(`Tem certeza que deseja excluir a aula "${content.title}"? Todos os arquivos e dados relacionados serão removidos permanentemente.`)) return
+
+  isUploading.value = true
+
+  try {
+    // 1. Get attachments to delete files from storage
+    const { data: attachments } = await supabase.from('attachments').select('file_url').eq('content_id', content.id)
+    
+    if (attachments && attachments.length > 0) {
+      const attachmentPaths = attachments.map(a => getPathFromUrl(a.file_url, 'files')).filter(Boolean) as string[]
+      if (attachmentPaths.length > 0) {
+        await supabase.storage.from('files').remove(attachmentPaths)
+      }
+    }
+
+    // 2. Delete main files from storage
+    const coursesFilesToDelete: string[] = []
+    
+    // Process video_url
+    const videoPath = getPathFromUrl(content.video_url, 'courses')
+    if (videoPath) {
+      if (videoPath.endsWith('.m3u8')) {
+        // HLS: Delete all files with the same prefix in the same folder
+        const lastSlashIndex = videoPath.lastIndexOf('/')
+        const folderPath = lastSlashIndex !== -1 ? videoPath.substring(0, lastSlashIndex) : ''
+        const fileName = videoPath.split('/').pop() || ''
+        const baseName = fileName.replace('.m3u8', '')
+        
+        let allHlsFiles: string[] = []
+        let offset = 0
+        const limit = 1000
+        let hasMore = true
+        
+        while (hasMore) {
+          const { data: files, error: listError } = await supabase.storage.from('courses').list(folderPath, {
+            limit,
+            offset,
+            search: baseName
+          })
+          
+          if (listError) throw listError
+          
+          if (!files || files.length === 0) {
+            hasMore = false
+          } else {
+            // Filter files that are either the exact m3u8 or variants/segments (nome_1080p..., nome.ts, etc.)
+            const hlsFiles = files
+              .filter(f => f.name === fileName || f.name.startsWith(baseName + '_') || f.name.startsWith(baseName + '.'))
+              .map(f => folderPath ? `${folderPath}/${f.name}` : f.name)
+            
+            allHlsFiles = [...allHlsFiles, ...hlsFiles]
+            offset += limit
+            if (files.length < limit) hasMore = false
+          }
+        }
+
+        // Delete in chunks of 100 (Storage.remove limit)
+        if (allHlsFiles.length > 0) {
+          for (let i = 0; i < allHlsFiles.length; i += 100) {
+            const chunk = allHlsFiles.slice(i, i + 100)
+            await supabase.storage.from('courses').remove(chunk)
+          }
+        }
+      } else {
+        coursesFilesToDelete.push(videoPath)
+      }
+    }
+
+    // Process file_url (for documents)
+    const filePath = getPathFromUrl(content.file_url, 'courses')
+    if (filePath && !coursesFilesToDelete.includes(filePath)) {
+      coursesFilesToDelete.push(filePath)
+    }
+
+    if (coursesFilesToDelete.length > 0) {
+      await supabase.storage.from('courses').remove(coursesFilesToDelete)
+    }
+
+    // 3. Delete content record (cascade will handle other tables)
+    const { error } = await supabase.from('contents').delete().eq('id', content.id)
+    
+    if (error) throw error
+
+    await refreshModules()
+  } catch (error: any) {
+    console.error('Delete error:', error)
+    alert('Erro ao excluir conteúdo: ' + error.message)
+  } finally {
+    isUploading.value = false
+  }
+}
 </script>
 
 <template>
@@ -362,13 +463,22 @@ async function saveContent(moduleId: string) {
                   <span v-if="content.file_url" class="text-xs bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded-full">Anexo</span>
                 </div>
               </div>
-              <div class="flex items-center gap-4">
-                <div class="text-xs text-gray-600">Ordem: {{ content.order_index }}</div>
+              <div class="flex items-center gap-2">
+                <div class="text-xs text-gray-600 mr-2">Ordem: {{ content.order_index }}</div>
                 <button 
                   @click="startEditContent(mod.id, content)"
                   class="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-all opacity-0 group-hover/item:opacity-100"
+                  title="Editar Aula"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+                </button>
+                <button 
+                  @click="deleteContent(content)"
+                  :disabled="isUploading"
+                  class="p-2 rounded-lg bg-white/5 hover:bg-red-500/20 text-gray-400 hover:text-red-400 transition-all opacity-0 group-hover/item:opacity-100 disabled:opacity-30"
+                  title="Excluir Aula"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
                 </button>
               </div>
             </div>
