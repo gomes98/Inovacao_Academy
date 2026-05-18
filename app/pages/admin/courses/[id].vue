@@ -312,6 +312,23 @@ async function deleteContent(content: any) {
     isUploading.value = false
   }
 }
+
+async function deleteModule(mod: any) {
+  if (mod.contents?.length > 0) {
+    alert('Não é possível excluir um módulo que ainda possui aulas. Exclua todos os conteúdos primeiro.')
+    return
+  }
+
+  if (!confirm(`Tem certeza que deseja excluir o módulo "${mod.title}"?`)) return
+
+  const { error } = await supabase.from('modules').delete().eq('id', mod.id)
+  
+  if (error) {
+    alert('Erro ao excluir módulo: ' + error.message)
+  } else {
+    await refreshModules()
+  }
+}
 </script>
 
 <template>
@@ -367,8 +384,20 @@ async function deleteContent(content: any) {
             <h2 class="text-xl font-semibold flex items-center gap-3">
               <span class="text-purple-400">{{ mod.order_index }}.</span>
               {{ mod.title }}
-              <button @click="startEditModule(mod)" class="p-1.5 rounded-lg hover:bg-white/5 text-gray-600 hover:text-purple-400 transition-all opacity-0 group-hover/mod:opacity-100">
+              <button 
+                @click="startEditModule(mod)" 
+                class="p-1.5 rounded-lg hover:bg-white/5 text-gray-600 hover:text-purple-400 transition-all opacity-0 group-hover/mod:opacity-100"
+                title="Editar Módulo"
+              >
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+              </button>
+              <button 
+                v-if="mod.contents?.length === 0"
+                @click="deleteModule(mod)" 
+                class="p-1.5 rounded-lg hover:bg-red-500/10 text-gray-600 hover:text-red-400 transition-all opacity-0 group-hover/mod:opacity-100"
+                title="Excluir Módulo"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
               </button>
             </h2>
             <button @click="openContentForm(mod.id)" class="text-sm px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-white transition-colors flex items-center gap-1">
