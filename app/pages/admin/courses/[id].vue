@@ -329,6 +329,34 @@ async function deleteModule(mod: any) {
     await refreshModules()
   }
 }
+
+async function deleteCourse() {
+  if (!course.value) return
+
+  // Validar se o curso possui módulos ou conteúdos
+  const totalModules = modules.value?.length || 0
+  const totalContents = modules.value?.reduce((acc: number, m: any) => acc + (m.contents?.length || 0), 0) || 0
+
+  if (totalModules > 0 || totalContents > 0) {
+    alert(`Não é possível excluir o curso "${course.value.title}". Ele possui ${totalModules} módulo(s) e ${totalContents} conteúdo(s). Por favor, remova todos os módulos e conteúdos antes.`)
+    return
+  }
+
+  if (!confirm(`Tem certeza que deseja excluir o curso "${course.value.title}"? Esta ação não pode ser desfeita.`)) {
+    return
+  }
+
+  const { error: deleteError } = await supabase
+    .from('courses')
+    .delete()
+    .eq('id', courseId)
+
+  if (deleteError) {
+    alert('Erro ao excluir curso: ' + deleteError.message)
+  } else {
+    await navigateTo('/admin/courses')
+  }
+}
 </script>
 
 <template>
@@ -350,13 +378,23 @@ async function deleteModule(mod: any) {
             </h1>
             <p class="text-gray-400 mt-2">Gerencie os módulos e conteúdos deste curso.</p>
           </div>
-          <button 
-            @click="isCreatingModule = true"
-            class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-medium transition-all flex items-center gap-2"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-            Adicionar Módulo
-          </button>
+          <div class="flex gap-2">
+            <button 
+              v-if="course"
+              @click="deleteCourse"
+              class="px-4 py-2 rounded-xl bg-red-950/20 hover:bg-red-900/40 text-red-400 border border-red-900/30 font-medium transition-all flex items-center gap-2"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+              Excluir Curso
+            </button>
+            <button 
+              @click="isCreatingModule = true"
+              class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-medium transition-all flex items-center gap-2"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              Adicionar Módulo
+            </button>
+          </div>
         </div>
       </header>
 
