@@ -31,7 +31,8 @@ const { data: structure, pending, error } = await useAsyncData(`course-structure
         title: item.content_title,
         type: item.content_type,
         order: item.content_order,
-        is_completed: item.is_completed
+        is_completed: item.is_completed,
+        duration: item.content_duration
       })
     }
   })
@@ -47,6 +48,13 @@ const stats = computed(() => {
   const percent = total > 0 ? Math.round((completed / total) * 100) : 0
   return { total, completed, percent }
 })
+
+function formatDuration(seconds: number): string {
+  if (!seconds || seconds <= 0) return ''
+  const m = Math.floor(seconds / 60)
+  const s = seconds % 60
+  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
+}
 </script>
 
 <template>
@@ -118,7 +126,10 @@ const stats = computed(() => {
               </div>
               <div class="flex-1">
                 <h3 class="text-sm font-medium text-gray-300 group-hover:text-white transition-colors">{{ content.title }}</h3>
-                <p class="text-xs text-gray-600 mt-0.5 capitalize">{{ content.type }}</p>
+                <p class="text-xs text-gray-600 mt-0.5 capitalize flex items-center gap-2">
+                  {{ content.type }}
+                  <span v-if="content.type === 'video' && formatDuration(content.duration)" class="text-gray-500">{{ formatDuration(content.duration) }}</span>
+                </p>
               </div>
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-700 group-hover:text-purple-400 group-hover:translate-x-1 transition-all"><path d="m9 18 6-6-6-6"/></svg>
             </NuxtLink>

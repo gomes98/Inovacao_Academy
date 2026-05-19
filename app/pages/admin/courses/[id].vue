@@ -330,6 +330,13 @@ async function deleteModule(mod: any) {
   }
 }
 
+function formatDuration(seconds: number): string {
+  if (!seconds || seconds <= 0) return ''
+  const m = Math.floor(seconds / 60)
+  const s = seconds % 60
+  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
+}
+
 async function deleteCourse() {
   if (!course.value) return
 
@@ -527,6 +534,7 @@ async function deleteCourse() {
                 <h4 class="text-sm font-medium text-gray-200">{{ content.title }}</h4>
                 <div class="flex items-center gap-2 mt-1">
                   <span class="text-xs text-gray-500 capitalize">{{ content.content_type }}</span>
+                  <span v-if="content.content_type === 'video' && formatDuration((content as any).duration)" class="text-xs text-gray-500">{{ formatDuration((content as any).duration) }}</span>
                   <span v-if="content.file_url" class="text-xs bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded-full">Anexo</span>
                 </div>
               </div>
