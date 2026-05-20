@@ -5,6 +5,8 @@ export default defineNuxtConfig({
   modules: ['@nuxtjs/supabase', '@nuxtjs/tailwindcss'],
   runtimeConfig: {
     openaiApiKey: process.env.OPENAI_API_KEY,
+    workerUrl: process.env.WORKER_URL,
+    workerSecret: process.env.WORKER_SECRET,
   },
   supabase: {
     redirect: true,
