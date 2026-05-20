@@ -216,7 +216,13 @@ async function processVideo(video) {
 
 // Percorre diretório recursivamente e faz upload de todos os arquivos
 async function uploadDirRecursive(bucket, localDir, storageBasePath) {
-  const entries = fs.readdirSync(localDir, { withFileTypes: true })
+  const exists = await fs.promises.access(localDir).then(() => true).catch(() => false)
+  if (!exists) {
+    console.error(`[upload] Diretório não encontrado, pulando: ${localDir}`)
+    return
+  }
+
+  const entries = await fs.promises.readdir(localDir, { withFileTypes: true })
 
   for (const entry of entries) {
     const localPath = path.join(localDir, entry.name)
@@ -226,15 +232,22 @@ async function uploadDirRecursive(bucket, localDir, storageBasePath) {
       await uploadDirRecursive(bucket, localPath, storagePath)
     } else {
       console.log(`[upload] ${localPath} → ${storagePath}`)
+      const fileBuffer = await fs.promises.readFile(localPath)
       const { error } = await supabase.storage
         .from(bucket)
-        .upload(storagePath, fs.createReadStream(localPath), { upsert: true })
+        .upload(storagePath, fileBuffer, { upsert: true, contentType: getContentType(entry.name) })
 
       if (error) {
         console.error(`[upload] Erro ao enviar ${entry.name}:`, error.message)
       }
     }
   }
+}
+
+function getContentType(filename) {
+  const ext = path.extname(filename).toLowerCase()
+  const map = { '.m3u8': 'application/vnd.apple.mpegurl', '.ts': 'video/mp2t', '.mp3': 'audio/mpeg', '.jpg': 'image/jpeg' }
+  return map[ext] ?? 'application/octet-stream'
 }
 
 // ========================
