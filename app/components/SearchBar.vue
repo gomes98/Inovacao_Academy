@@ -1,28 +1,8 @@
 <script setup lang="ts">
 const { query, results, isLoading, error, clear } = useSearch()
-const isOpen = ref(false)
-const inputRef = ref<HTMLInputElement | null>(null)
-
-function open() {
-  isOpen.value = true
-  nextTick(() => inputRef.value?.focus())
-}
-
-function close() {
-  isOpen.value = false
-  clear()
-}
-
-function handleBlur(e: FocusEvent) {
-  const container = (e.currentTarget as HTMLElement)
-  const relatedTarget = e.relatedTarget as HTMLElement | null
-  if (!relatedTarget || !container.contains(relatedTarget)) {
-    setTimeout(() => close(), 150)
-  }
-}
 
 function handleKeydown(e: KeyboardEvent) {
-  if (e.key === 'Escape') close()
+  if (e.key === 'Escape') clear()
 }
 
 function formatTime(seconds: number): string {
@@ -35,41 +15,23 @@ function truncate(text: string, max = 80): string {
   return text.length > max ? text.slice(0, max) + '…' : text
 }
 
-const showDropdown = computed(() =>
-  isOpen.value && query.value.length >= 2
-)
+const showDropdown = computed(() => query.value.length >= 2)
 </script>
 
 <template>
   <div class="search-container" @keydown="handleKeydown">
-    <!-- Ícone de lupa (fechado) -->
-    <button v-if="!isOpen" class="search-icon-btn" @click="open" aria-label="Buscar">
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-      </svg>
-    </button>
-
-    <!-- Input expandido -->
-    <div v-else class="search-expanded" @focusout="handleBlur">
+    <div class="search-expanded">
       <svg class="search-icon-inline" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
         stroke-linecap="round" stroke-linejoin="round">
         <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
       </svg>
       <input
-        ref="inputRef"
         v-model="query"
         type="text"
         placeholder="Buscar conteúdo..."
         class="search-input"
       />
-      <button class="close-btn" @mousedown.prevent="close" aria-label="Fechar busca">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-          fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-          <path d="M18 6 6 18M6 6l12 12"/>
-        </svg>
-      </button>
 
       <!-- Dropdown de resultados -->
       <Transition name="dropdown">
@@ -101,7 +63,7 @@ const showDropdown = computed(() =>
               :key="`${r.contentId}-${r.startTime}`"
               :to="`/lesson/${r.contentId}?t=${Math.floor(r.startTime)}`"
               class="result-item"
-              @click="close"
+              @click="clear"
             >
               <!-- Thumbnail -->
               <div class="result-thumb">
