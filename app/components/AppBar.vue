@@ -66,6 +66,9 @@ onMounted(() => {
         <span class="brand-text">Inovação Academy</span>
       </NuxtLink>
 
+      <!-- Busca: só para usuários autenticados -->
+      <SearchBar v-if="user" />
+
       <div v-if="user" class="profile-dropdown-container">
         <button class="profile-trigger" @click.stop="toggleDropdown">
           <div class="user-info">
