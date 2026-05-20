@@ -43,6 +43,21 @@ CREATE TABLE IF NOT EXISTS public.user_groups (
 );
 
 -- ------------------------------------------------------------
+-- DROP POLICIES LEGADAS — courses (criadas pela migration inicial)
+-- Necessário porque policies de SELECT são combinadas com OR no Postgres,
+-- e a policy "select_courses" com USING (true) anularia o novo RLS de acesso.
+-- ------------------------------------------------------------
+
+DROP POLICY IF EXISTS "select_courses"                               ON public.courses;
+DROP POLICY IF EXISTS "admin_courses"                               ON public.courses;
+DROP POLICY IF EXISTS "Gerenciamento de cursos por admin/publicador" ON public.courses;
+DROP POLICY IF EXISTS "Cursos são visíveis por usuários autenticados" ON public.courses;
+
+-- Previne erro caso a migration seja reaplicada (drop antes de recriar)
+DROP POLICY IF EXISTS "courses_admin_all" ON public.courses;
+DROP POLICY IF EXISTS "courses_access"   ON public.courses;
+
+-- ------------------------------------------------------------
 -- RLS — HABILITAR
 -- ------------------------------------------------------------
 
@@ -154,3 +169,13 @@ CREATE POLICY "courses_access"
       WHERE ug.user_id = auth.uid() AND gca.course_id = courses.id
     )
   );
+
+-- ------------------------------------------------------------
+-- ÍNDICES — performance para as policies RLS
+-- ------------------------------------------------------------
+
+CREATE INDEX IF NOT EXISTS idx_user_groups_user_id
+  ON public.user_groups(user_id);
+
+CREATE INDEX IF NOT EXISTS idx_group_course_access_lookup
+  ON public.group_course_access(group_id, course_id);
