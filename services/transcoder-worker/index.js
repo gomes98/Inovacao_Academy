@@ -59,10 +59,10 @@ async function runNextInQueue(videoHint) {
   } finally {
     queue.clearProcessing()
 
-    const nextId = queue.peek()
-    if (!nextId) return
+    const peekId = queue.peek()
+    if (!peekId) return
 
-    const cached = videoCache.get(nextId)
+    const cached = videoCache.get(peekId)
     if (cached) {
       runNextInQueue(cached)
     } else {
