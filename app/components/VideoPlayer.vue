@@ -5,6 +5,7 @@ import 'video.js/dist/video-js.css'
 interface Props {
   src: string
   poster?: string
+  startTime?: number
 }
 
 const props = defineProps<Props>()
@@ -173,6 +174,12 @@ watch([isReady, () => videoElement.value], ([ready, el]) => {
     if (duration > 0 && !progressReached90.value && player.currentTime() / duration >= 0.9) {
       progressReached90.value = true
       emit('progress-90')
+    }
+  })
+
+  player.ready(() => {
+    if (props.startTime && props.startTime > 0) {
+      player.currentTime(props.startTime)
     }
   })
 
