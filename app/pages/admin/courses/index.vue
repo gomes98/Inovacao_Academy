@@ -60,6 +60,81 @@ function cancelCreate() {
   coverMode.value = 'url'
 }
 
+// Edit course
+const editingCourse = ref<any>(null)
+const editCoverMode = ref<'url' | 'upload'>('url')
+const uploadingEditCover = ref(false)
+
+function startEditCourse(course: any) {
+  editingCourse.value = { ...course }
+  editCoverMode.value = 'url'
+  isCreating.value = false
+}
+
+function cancelEdit() {
+  editingCourse.value = null
+  editCoverMode.value = 'url'
+}
+
+function switchEditCoverMode(mode: 'url' | 'upload') {
+  editCoverMode.value = mode
+  editingCourse.value.thumbnail_url = ''
+}
+
+async function uploadEditCoverImage(event: Event) {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  if (!file) return
+
+  if (!file.type.startsWith('image/')) {
+    alert('Por favor, selecione uma imagem.')
+    return
+  }
+
+  uploadingEditCover.value = true
+  try {
+    const fileExt = file.name.split('.').pop()
+    const fileName = `thumbnails/${Date.now()}.${fileExt}`
+
+    const { error: uploadError } = await supabase.storage
+      .from('courses')
+      .upload(fileName, file, { upsert: true })
+
+    if (uploadError) throw uploadError
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('courses')
+      .getPublicUrl(fileName)
+
+    editingCourse.value.thumbnail_url = publicUrl
+  } catch (err: any) {
+    alert('Erro ao fazer upload da capa: ' + err.message)
+  } finally {
+    uploadingEditCover.value = false
+  }
+}
+
+async function updateCourse() {
+  if (!editingCourse.value?.title) return
+
+  const { error } = await supabase
+    .from('courses')
+    .update({
+      title: editingCourse.value.title,
+      description: editingCourse.value.description,
+      thumbnail_url: editingCourse.value.thumbnail_url
+    })
+    .eq('id', editingCourse.value.id)
+
+  if (!error) {
+    editingCourse.value = null
+    editCoverMode.value = 'url'
+    await refresh()
+  } else {
+    alert('Erro ao atualizar curso: ' + error.message)
+  }
+}
+
 async function createCourse() {
   if (!newCourse.value.title) return
   
@@ -246,30 +321,128 @@ async function deleteCourse(course: any) {
       </div>
 
       <div v-else class="grid grid-cols-1 gap-4">
-        <div v-for="course in courses" :key="course.id" class="glass-card p-4 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl flex items-center gap-6">
-          <div class="w-32 h-20 bg-black/50 rounded-xl overflow-hidden shrink-0 border border-white/5">
-            <img v-if="course.thumbnail_url" :src="course.thumbnail_url" class="w-full h-full object-cover" alt="Thumbnail">
-            <div v-else class="w-full h-full flex items-center justify-center text-white/10">
-               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+        <div v-for="course in courses" :key="course.id" class="glass-card rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl overflow-hidden">
+          <!-- Course Row -->
+          <div class="p-4 flex items-center gap-6">
+            <div class="w-32 h-20 bg-black/50 rounded-xl overflow-hidden shrink-0 border border-white/5">
+              <img v-if="course.thumbnail_url" :src="course.thumbnail_url" class="w-full h-full object-cover" alt="Thumbnail">
+              <div v-else class="w-full h-full flex items-center justify-center text-white/10">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+              </div>
+            </div>
+            <div class="flex-1">
+              <h3 class="font-bold text-lg text-white">{{ course.title }}</h3>
+              <p class="text-sm text-gray-400 line-clamp-1">{{ course.description || 'Sem descrição' }}</p>
+            </div>
+            <div class="shrink-0 flex gap-2">
+              <NuxtLink :to="`/admin/courses/${course.id}`" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm transition-all flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                Gerenciar Módulos
+              </NuxtLink>
+              <button
+                @click="startEditCourse(course)"
+                class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm transition-all flex items-center gap-2"
+                title="Editar Curso"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg>
+                Editar
+              </button>
+              <button
+                @click="deleteCourse(course)"
+                class="px-4 py-2 rounded-xl bg-red-950/20 hover:bg-red-900/40 text-red-400 border border-red-900/30 text-sm font-medium transition-all flex items-center gap-2"
+                title="Excluir Curso"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                Excluir
+              </button>
             </div>
           </div>
-          <div class="flex-1">
-            <h3 class="font-bold text-lg text-white">{{ course.title }}</h3>
-            <p class="text-sm text-gray-400 line-clamp-1">{{ course.description || 'Sem descrição' }}</p>
-          </div>
-          <div class="shrink-0 flex gap-2">
-            <NuxtLink :to="`/admin/courses/${course.id}`" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm transition-all flex items-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-              Gerenciar Módulos
-            </NuxtLink>
-            <button 
-              @click="deleteCourse(course)"
-              class="px-4 py-2 rounded-xl bg-red-950/20 hover:bg-red-900/40 text-red-400 border border-red-900/30 text-sm font-medium transition-all flex items-center gap-2"
-              title="Excluir Curso"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
-              Excluir
-            </button>
+
+          <!-- Edit Form (inline) -->
+          <div v-if="editingCourse?.id === course.id" class="border-t border-white/10 p-6 bg-purple-500/5">
+            <h3 class="text-sm font-semibold text-purple-300 mb-4">Editar Curso</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <label class="block text-sm text-gray-400 mb-1">Título</label>
+                <input v-model="editingCourse.title" type="text" class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-white outline-none focus:border-purple-500/50 transition-colors">
+              </div>
+              <div>
+                <label class="block text-sm text-gray-400 mb-2">Capa do Curso</label>
+                <!-- Tabs -->
+                <div class="flex gap-1 mb-3 bg-black/40 p-1 rounded-xl w-fit border border-white/10">
+                  <button
+                    type="button"
+                    @click="switchEditCoverMode('url')"
+                    :class="[
+                      'px-4 py-1.5 rounded-lg text-sm font-medium transition-all',
+                      editCoverMode === 'url'
+                        ? 'bg-purple-600 text-white shadow'
+                        : 'text-gray-400 hover:text-white'
+                    ]"
+                  >URL</button>
+                  <button
+                    type="button"
+                    @click="switchEditCoverMode('upload')"
+                    :class="[
+                      'px-4 py-1.5 rounded-lg text-sm font-medium transition-all',
+                      editCoverMode === 'upload'
+                        ? 'bg-purple-600 text-white shadow'
+                        : 'text-gray-400 hover:text-white'
+                    ]"
+                  >Upload</button>
+                </div>
+                <!-- Tab: URL -->
+                <div v-if="editCoverMode === 'url'">
+                  <input
+                    v-model="editingCourse.thumbnail_url"
+                    type="text"
+                    class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-white outline-none focus:border-purple-500/50 transition-colors"
+                    placeholder="https://..."
+                  >
+                </div>
+                <!-- Tab: Upload -->
+                <div v-else>
+                  <label
+                    :for="`edit-cover-upload-${course.id}`"
+                    class="flex flex-col items-center justify-center w-full h-28 rounded-xl border border-dashed border-white/20 bg-black/30 cursor-pointer hover:border-purple-500/50 hover:bg-purple-500/5 transition-all relative overflow-hidden"
+                  >
+                    <img
+                      v-if="editingCourse.thumbnail_url && !uploadingEditCover"
+                      :src="editingCourse.thumbnail_url"
+                      class="absolute inset-0 w-full h-full object-cover opacity-60"
+                      alt="Preview"
+                    >
+                    <div v-if="uploadingEditCover" class="relative flex flex-col items-center gap-2 text-purple-400">
+                      <div class="w-6 h-6 border-2 border-purple-500/30 border-t-purple-400 animate-spin rounded-full"></div>
+                      <span class="text-xs font-medium">Enviando...</span>
+                    </div>
+                    <div v-else class="relative flex flex-col items-center gap-1 text-gray-400">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+                      <span class="text-xs">{{ editingCourse.thumbnail_url ? 'Clique para trocar' : 'Clique para selecionar' }}</span>
+                    </div>
+                    <input
+                      :id="`edit-cover-upload-${course.id}`"
+                      type="file"
+                      class="hidden"
+                      accept="image/*"
+                      @change="uploadEditCoverImage"
+                      :disabled="uploadingEditCover"
+                    >
+                  </label>
+                  <p v-if="editingCourse.thumbnail_url && !uploadingEditCover" class="text-xs text-green-400 mt-1">
+                    Imagem carregada com sucesso
+                  </p>
+                </div>
+              </div>
+              <div class="md:col-span-2">
+                <label class="block text-sm text-gray-400 mb-1">Descrição</label>
+                <textarea v-model="editingCourse.description" rows="3" class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-white outline-none focus:border-purple-500/50 transition-colors" placeholder="Breve descrição do curso..."></textarea>
+              </div>
+            </div>
+            <div class="flex justify-end gap-3">
+              <button @click="cancelEdit" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white transition-all">Cancelar</button>
+              <button @click="updateCourse" :disabled="uploadingEditCover" class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed">Salvar Alterações</button>
+            </div>
           </div>
         </div>
       </div>
