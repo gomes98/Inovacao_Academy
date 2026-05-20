@@ -13,6 +13,52 @@ const newCourse = ref({
   description: '',
   thumbnail_url: ''
 })
+const coverMode = ref<'url' | 'upload'>('url')
+const uploadingCover = ref(false)
+
+function switchCoverMode(mode: 'url' | 'upload') {
+  coverMode.value = mode
+  newCourse.value.thumbnail_url = ''
+}
+
+async function uploadCoverImage(event: Event) {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  if (!file) return
+
+  if (!file.type.startsWith('image/')) {
+    alert('Por favor, selecione uma imagem.')
+    return
+  }
+
+  uploadingCover.value = true
+  try {
+    const fileExt = file.name.split('.').pop()
+    const fileName = `thumbnails/${Date.now()}.${fileExt}`
+
+    const { error: uploadError } = await supabase.storage
+      .from('courses')
+      .upload(fileName, file, { upsert: true })
+
+    if (uploadError) throw uploadError
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('courses')
+      .getPublicUrl(fileName)
+
+    newCourse.value.thumbnail_url = publicUrl
+  } catch (err: any) {
+    alert('Erro ao fazer upload da capa: ' + err.message)
+  } finally {
+    uploadingCover.value = false
+  }
+}
+
+function cancelCreate() {
+  isCreating.value = false
+  newCourse.value = { title: '', description: '', thumbnail_url: '' }
+  coverMode.value = 'url'
+}
 
 async function createCourse() {
   if (!newCourse.value.title) return
@@ -28,6 +74,7 @@ async function createCourse() {
   if (!error) {
     isCreating.value = false
     newCourse.value = { title: '', description: '', thumbnail_url: '' }
+    coverMode.value = 'url'
     await refresh()
   } else {
     alert('Erro ao criar curso: ' + error.message)
@@ -114,7 +161,7 @@ async function deleteCourse(course: any) {
           </div>
         </div>
         <div class="flex justify-end gap-3">
-          <button @click="isCreating = false" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white transition-all">Cancelar</button>
+          <button @click="cancelCreate" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white transition-all">Cancelar</button>
           <button @click="createCourse" class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white transition-all">Salvar Curso</button>
         </div>
       </div>
