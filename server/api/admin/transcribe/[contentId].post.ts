@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const { data: isAdmin, error: roleError } = await supabase
-    .rpc('has_role', { roles: ['admin', 'publicador'] })
+    .rpc('has_role', { required_roles: ['admin', 'publicador'] })
   if (roleError || !isAdmin) {
     throw createError({ statusCode: 403, message: 'Acesso negado' })
   }
