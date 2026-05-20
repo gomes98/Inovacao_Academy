@@ -2,6 +2,7 @@
 
 const path = require('path')
 const fs = require('fs')
+const { spawn } = require('child_process')
 const { runFfmpeg } = require('./run-ffmpeg')
 
 const PRESETS = [
@@ -132,7 +133,7 @@ async function generateThumbnail(inputPath, outputDir, baseName, duration) {
   return output
 }
 
-function generateMasterPlaylist(outputDir, baseName, variants) {
+async function generateMasterPlaylist(outputDir, baseName, variants) {
   const masterPath = path.join(
     outputDir,
     `${baseName}.m3u8`
@@ -151,86 +152,14 @@ function generateMasterPlaylist(outputDir, baseName, variants) {
     )
   }
 
-  fs.writeFileSync(masterPath, lines.join('\n'))
+  await fs.promises.writeFile(masterPath, lines.join('\n'))
 
   return masterPath
 }
 
-// async function processVideo(inputPath) {
-//   if (!fs.existsSync(inputPath)) {
-//     throw new Error('Arquivo não encontrado')
-//   }
-
-//   const ext = path.extname(inputPath)
-//   const filenameWithoutExt = path.basename(inputPath, ext)
-
-//   const newDir = path.join(
-//     path.dirname(inputPath),
-//     filenameWithoutExt
-//   )
-
-//   if (!fs.existsSync(newDir)) {
-//     fs.mkdirSync(newDir)
-//   }
-
-//   console.log("newDir", newDir);
-  
-
-//   const outputDir = path.dirname(newDir+"\\")
-//   // const outputDir = path.dirname(path.join(inputPath, filenameWithoutExt))
-
-
-
-//   console.log("outputDir", outputDir);
-//   console.log("inputPath", inputPath);
-//   console.log("filenameWithoutExt", filenameWithoutExt);
-//   console.log("ext", ext);
-//   process.exit(0);
-
-//   const baseName = path.basename(
-//     inputPath,
-//     ext
-//   )
-
-//   console.log(`\nProcessando vídeo: ${baseName}\n`)
-
-//   const variants = []
-
-//   for (const preset of PRESETS) {
-//     const variant = await generateHLS(
-//       inputPath,
-//       outputDir,
-//       baseName,
-//       preset
-//     )
-
-//     variants.push(variant)
-//   }
-
-//   await generateMP3(
-//     inputPath,
-//     outputDir,
-//     baseName
-//   )
-
-//   await generateThumbnail(
-//     inputPath,
-//     outputDir,
-//     baseName
-//   )
-
-//   generateMasterPlaylist(
-//     outputDir,
-//     baseName,
-//     variants
-//   )
-
-//   console.log('\nProcessamento finalizado!')
-// }
 
 async function getVideoDuration(inputPath) {
   return new Promise((resolve, reject) => {
-    const { spawn } = require('child_process')
     const proc = spawn('ffprobe', [
       '-v', 'error',
       '-show_entries', 'format=duration',
@@ -250,7 +179,8 @@ async function getVideoDuration(inputPath) {
 }
 
 async function processVideo(inputPath) {
-  if (!fs.existsSync(inputPath)) {
+  const accessible = await fs.promises.access(inputPath).then(() => true).catch(() => false)
+  if (!accessible) {
     throw new Error('Arquivo não encontrado')
   }
 
@@ -263,18 +193,12 @@ async function processVideo(inputPath) {
     ext
   )
 
-  // cria pasta com o nome do arquivo
   const outputDir = path.join(
     inputDir,
     baseName
   )
 
-  // cria diretório caso não exista
-  if (!fs.existsSync(outputDir)) {
-    fs.mkdirSync(outputDir, {
-      recursive: true
-    })
-  }
+  await fs.promises.mkdir(outputDir, { recursive: true })
 
   console.log(`\nProcessando vídeo: ${baseName}\n`)
   console.log(`Saída: ${outputDir}\n`)
@@ -307,7 +231,7 @@ async function processVideo(inputPath) {
     duration
   )
 
-  generateMasterPlaylist(
+  await generateMasterPlaylist(
     outputDir,
     baseName,
     variants
