@@ -12,6 +12,7 @@
   "dependencies": {
     "@nuxtjs/supabase": "^2.0.8",
     "nuxt": "^4.4.5",
+    "openai": "^6.38.0",
     "video.js": "^8.23.7",
     "videojs-contrib-quality-levels": "^4.1.0",
     "videojs-hls-quality-selector": "^2.0.0",
