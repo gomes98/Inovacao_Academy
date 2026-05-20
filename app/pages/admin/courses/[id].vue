@@ -23,6 +23,7 @@ const { data: modules, refresh: refreshModules } = await useAsyncData(`admin-mod
 // Module Creation & Editing
 const isCreatingModule = ref(false)
 const editingModuleId = ref<string | null>(null)
+const transcribingIds = ref<Set<string>>(new Set())
 const newModule = ref({ title: '', order_index: 0 })
 
 function startEditModule(mod: any) {
@@ -330,6 +331,42 @@ async function deleteModule(mod: any) {
   }
 }
 
+async function forceTranscribe(content: any) {
+  if (!confirm(`Forçar nova transcrição para "${content.title}"?\nOs dados de transcrição existentes serão apagados.`)) return
+
+  transcribingIds.value = new Set([...transcribingIds.value, content.id])
+
+  try {
+    const { error: delTranscription } = await supabase
+      .from('content_transcriptions')
+      .delete()
+      .eq('content_id', content.id)
+    if (delTranscription) throw new Error(delTranscription.message)
+
+    const { error: delChunks } = await supabase
+      .from('content_chunks')
+      .delete()
+      .eq('content_id', content.id)
+    if (delChunks) throw new Error(delChunks.message)
+
+    const { error: statusErr } = await supabase
+      .from('contents')
+      .update({ status: 'processed' })
+      .eq('id', content.id)
+    if (statusErr) throw new Error(statusErr.message)
+
+    await $fetch(`/api/admin/transcribe/${content.id}`, { method: 'POST' })
+
+    content.status = 'transcribing'
+  } catch (err: any) {
+    alert('Erro ao forçar transcrição: ' + err.message)
+  } finally {
+    const next = new Set(transcribingIds.value)
+    next.delete(content.id)
+    transcribingIds.value = next
+  }
+}
+
 function formatDuration(seconds: number): string {
   if (!seconds || seconds <= 0) return ''
   const m = Math.floor(seconds / 60)
@@ -536,11 +573,46 @@ async function deleteCourse() {
                   <span class="text-xs text-gray-500 capitalize">{{ content.content_type }}</span>
                   <span v-if="content.content_type === 'video' && formatDuration((content as any).duration)" class="text-xs text-gray-500">{{ formatDuration((content as any).duration) }}</span>
                   <span v-if="content.file_url" class="text-xs bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded-full">Anexo</span>
+                  <template v-if="content.content_type === 'video' && (content as any).status">
+                    <span
+                      v-if="(content as any).status === 'indexed'"
+                      class="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full"
+                    >Indexado</span>
+                    <span
+                      v-else-if="(content as any).status === 'transcribing'"
+                      class="text-xs bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded-full animate-pulse"
+                    >Transcrevendo</span>
+                    <span
+                      v-else-if="(content as any).status === 'failed'"
+                      class="text-xs bg-red-500/20 text-red-400 px-2 py-0.5 rounded-full"
+                    >Falhou</span>
+                    <span
+                      v-else
+                      class="text-xs bg-white/10 text-gray-400 px-2 py-0.5 rounded-full"
+                    >Não indexado</span>
+                  </template>
                 </div>
               </div>
               <div class="flex items-center gap-2">
                 <div class="text-xs text-gray-600 mr-2">Ordem: {{ content.order_index }}</div>
-                <button 
+                <button
+                  v-if="content.content_type === 'video'"
+                  @click="forceTranscribe(content)"
+                  :disabled="transcribingIds.has(content.id) || isUploading"
+                  class="p-2 rounded-lg bg-white/5 hover:bg-blue-500/20 text-gray-400 hover:text-blue-400 transition-all opacity-0 group-hover/item:opacity-100 disabled:opacity-30"
+                  title="Forçar Transcrição"
+                >
+                  <svg v-if="!transcribingIds.has(content.id)" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+                    <path d="M21 3v5h-5"/>
+                    <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+                    <path d="M8 16H3v5"/>
+                  </svg>
+                  <svg v-else xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="animate-spin">
+                    <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+                  </svg>
+                </button>
+                <button
                   @click="startEditContent(mod.id, content)"
                   class="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-all opacity-0 group-hover/item:opacity-100"
                   title="Editar Aula"
