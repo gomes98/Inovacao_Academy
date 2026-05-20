@@ -129,9 +129,13 @@ const channel = supabase
       }
     }
   )
-  .subscribe((status) => {
+  .subscribe(async (status) => {
     console.log('[realtime] Status:', status)
-    checkPendencias()
+    try {
+      await checkPendencias()
+    } catch (err) {
+      console.error('[realtime] Erro em checkPendencias:', err)
+    }
   })
 
 // ========================
