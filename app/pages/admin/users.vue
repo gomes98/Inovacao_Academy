@@ -25,6 +25,76 @@ const roles = [
   { value: 'disabled', label: 'Desativado' }
 ]
 
+// ─── Dados para a seção de acesso ────────────────────────────
+const allCourses = ref<any[]>([])
+const allGroups = ref<any[]>([])
+
+const accessMode = ref<'all_courses' | 'specific' | 'groups_only'>('groups_only')
+const selectedCourseIds = ref<Set<string>>(new Set())
+const selectedGroupIds = ref<Set<string>>(new Set())
+
+async function fetchAccessData() {
+  const [{ data: courses }, { data: groups }] = await Promise.all([
+    useSupabaseClient().from('courses').select('id, title').order('title'),
+    useSupabaseClient().from('permission_groups').select('id, name').order('name'),
+  ])
+  allCourses.value = courses ?? []
+  allGroups.value = groups ?? []
+}
+
+async function fetchUserAccess(userId: string) {
+  const supabase = useSupabaseClient()
+  const [{ data: uam }, { data: uca }, { data: ug }] = await Promise.all([
+    supabase.from('user_access_mode').select('mode').eq('user_id', userId).maybeSingle(),
+    supabase.from('user_course_access').select('course_id').eq('user_id', userId),
+    supabase.from('user_groups').select('group_id').eq('user_id', userId),
+  ])
+
+  if (uam?.mode === 'all_courses') {
+    accessMode.value = 'all_courses'
+  } else if ((uca ?? []).length > 0) {
+    accessMode.value = 'specific'
+  } else {
+    accessMode.value = 'groups_only'
+  }
+
+  selectedCourseIds.value = new Set((uca ?? []).map((r: any) => r.course_id))
+  selectedGroupIds.value = new Set((ug ?? []).map((r: any) => r.group_id))
+}
+
+async function saveUserAccess(userId: string) {
+  const supabase = useSupabaseClient()
+
+  await supabase.from('user_access_mode').upsert({
+    user_id: userId,
+    mode: accessMode.value === 'all_courses' ? 'all_courses' : 'restricted',
+  })
+
+  await supabase.from('user_course_access').delete().eq('user_id', userId)
+  if (accessMode.value === 'specific' && selectedCourseIds.value.size > 0) {
+    const rows = Array.from(selectedCourseIds.value).map(course_id => ({ user_id: userId, course_id }))
+    await supabase.from('user_course_access').insert(rows)
+  }
+
+  await supabase.from('user_groups').delete().eq('user_id', userId)
+  if (selectedGroupIds.value.size > 0) {
+    const rows = Array.from(selectedGroupIds.value).map(group_id => ({ user_id: userId, group_id }))
+    await supabase.from('user_groups').insert(rows)
+  }
+}
+
+function toggleCourseId(courseId: string) {
+  if (selectedCourseIds.value.has(courseId)) selectedCourseIds.value.delete(courseId)
+  else selectedCourseIds.value.add(courseId)
+  selectedCourseIds.value = new Set(selectedCourseIds.value)
+}
+
+function toggleGroupId(groupId: string) {
+  if (selectedGroupIds.value.has(groupId)) selectedGroupIds.value.delete(groupId)
+  else selectedGroupIds.value.add(groupId)
+  selectedGroupIds.value = new Set(selectedGroupIds.value)
+}
+
 // Fetch data
 async function fetchUsers() {
   loading.value = true
@@ -58,8 +128,6 @@ async function handleSubmit() {
     } else if (action === 'edit') {
       payload.action = 'update_user'
       payload.userId = form.value.id
-    } else if (action === 'invite') {
-      // payload already has email and role
     }
 
     const { data, error } = await supabase.functions.invoke('manage-users', {
@@ -68,6 +136,10 @@ async function handleSubmit() {
 
     if (error) throw error
     if (data.error) throw new Error(data.error)
+
+    if (action === 'edit' && form.value.role === 'aluno') {
+      await saveUserAccess(form.value.id)
+    }
 
     alert(action === 'edit' ? 'Usuário atualizado!' : 'Operação realizada com sucesso!')
     isModalOpen.value = false
@@ -99,7 +171,7 @@ async function deleteUser(userId: string) {
   }
 }
 
-function openModal(action: 'create' | 'edit' | 'invite', userData?: any) {
+async function openModal(action: 'create' | 'edit' | 'invite', userData?: any) {
   modalAction.value = action
   if (action === 'edit' && userData) {
     selectedUser.value = userData
@@ -110,15 +182,16 @@ function openModal(action: 'create' | 'edit' | 'invite', userData?: any) {
       password: '',
       role: userData.role
     }
+    if (userData.role === 'aluno') {
+      await fetchAccessData()
+      await fetchUserAccess(userData.id)
+    }
   } else {
     selectedUser.value = null
-    form.value = {
-      id: '',
-      name: '',
-      email: '',
-      password: '',
-      role: 'aluno'
-    }
+    form.value = { id: '', name: '', email: '', password: '', role: 'aluno' }
+    accessMode.value = 'groups_only'
+    selectedCourseIds.value = new Set()
+    selectedGroupIds.value = new Set()
   }
   isModalOpen.value = true
 }
@@ -297,15 +370,75 @@ onMounted(() => {
             </div>
           </div>
 
+          <!-- Acesso a Cursos — visível apenas para alunos em edição -->
+          <div v-if="modalAction === 'edit' && form.role === 'aluno'" class="space-y-4 pt-2 border-t border-white/5">
+            <p class="text-[10px] font-bold tracking-widest uppercase text-gray-500 mt-4">Acesso a Cursos</p>
+
+            <!-- Modo de acesso -->
+            <div class="space-y-2">
+              <label
+                v-for="opt in [
+                  { value: 'all_courses', label: 'Todos os cursos' },
+                  { value: 'specific', label: 'Cursos específicos' },
+                  { value: 'groups_only', label: 'Somente via grupos' }
+                ]"
+                :key="opt.value"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-xl border cursor-pointer transition-all"
+                :class="accessMode === opt.value ? 'border-purple-500/50 bg-purple-500/10' : 'border-white/5 hover:border-white/10'"
+              >
+                <input type="radio" :value="opt.value" v-model="accessMode" class="accent-purple-500" />
+                <span class="text-sm text-gray-200">{{ opt.label }}</span>
+              </label>
+            </div>
+
+            <!-- Checkboxes de cursos específicos -->
+            <div v-if="accessMode === 'specific'" class="space-y-1.5 max-h-40 overflow-y-auto pr-1">
+              <label
+                v-for="course in allCourses"
+                :key="course.id"
+                class="flex items-center gap-3 px-3 py-2 rounded-xl border border-white/5 hover:border-white/10 cursor-pointer transition-all"
+              >
+                <input
+                  type="checkbox"
+                  :checked="selectedCourseIds.has(course.id)"
+                  @change="toggleCourseId(course.id)"
+                  class="w-4 h-4 accent-purple-500"
+                />
+                <span class="text-xs text-gray-300">{{ course.title }}</span>
+              </label>
+            </div>
+
+            <!-- Grupos -->
+            <div>
+              <p class="text-[10px] font-bold tracking-widest uppercase text-gray-500 mb-2">Grupos</p>
+              <div class="space-y-1.5 max-h-32 overflow-y-auto pr-1">
+                <label
+                  v-for="group in allGroups"
+                  :key="group.id"
+                  class="flex items-center gap-3 px-3 py-2 rounded-xl border border-white/5 hover:border-white/10 cursor-pointer transition-all"
+                >
+                  <input
+                    type="checkbox"
+                    :checked="selectedGroupIds.has(group.id)"
+                    @change="toggleGroupId(group.id)"
+                    class="w-4 h-4 accent-purple-500"
+                  />
+                  <span class="text-xs text-gray-300">{{ group.name }}</span>
+                </label>
+              </div>
+              <p v-if="allGroups.length === 0" class="text-xs text-gray-600 italic mt-2">Nenhum grupo criado ainda.</p>
+            </div>
+          </div>
+
           <div class="flex gap-3 pt-4">
-            <button 
+            <button
               type="button"
               @click="isModalOpen = false"
               class="flex-1 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-white font-bold text-xs tracking-widest uppercase transition-all"
             >
               Cancelar
             </button>
-            <button 
+            <button
               type="submit"
               :disabled="loading"
               class="flex-1 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-bold text-xs tracking-widest uppercase transition-all disabled:opacity-50"
