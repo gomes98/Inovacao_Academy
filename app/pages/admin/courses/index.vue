@@ -152,8 +152,78 @@ async function deleteCourse(course: any) {
             <input v-model="newCourse.title" type="text" class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-white outline-none focus:border-purple-500/50 transition-colors" placeholder="Ex: Introdução ao Vue 3">
           </div>
           <div>
-            <label class="block text-sm text-gray-400 mb-1">URL da Capa (Thumbnail)</label>
-            <input v-model="newCourse.thumbnail_url" type="text" class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-white outline-none focus:border-purple-500/50 transition-colors" placeholder="https://...">
+            <label class="block text-sm text-gray-400 mb-2">Capa do Curso</label>
+
+            <!-- Tabs -->
+            <div class="flex gap-1 mb-3 bg-black/40 p-1 rounded-xl w-fit border border-white/10">
+              <button
+                type="button"
+                @click="switchCoverMode('url')"
+                :class="[
+                  'px-4 py-1.5 rounded-lg text-sm font-medium transition-all',
+                  coverMode === 'url'
+                    ? 'bg-purple-600 text-white shadow'
+                    : 'text-gray-400 hover:text-white'
+                ]"
+              >URL</button>
+              <button
+                type="button"
+                @click="switchCoverMode('upload')"
+                :class="[
+                  'px-4 py-1.5 rounded-lg text-sm font-medium transition-all',
+                  coverMode === 'upload'
+                    ? 'bg-purple-600 text-white shadow'
+                    : 'text-gray-400 hover:text-white'
+                ]"
+              >Upload</button>
+            </div>
+
+            <!-- Tab: URL -->
+            <div v-if="coverMode === 'url'">
+              <input
+                v-model="newCourse.thumbnail_url"
+                type="text"
+                class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-white outline-none focus:border-purple-500/50 transition-colors"
+                placeholder="https://..."
+              >
+            </div>
+
+            <!-- Tab: Upload -->
+            <div v-else>
+              <label
+                for="cover-upload"
+                class="flex flex-col items-center justify-center w-full h-28 rounded-xl border border-dashed border-white/20 bg-black/30 cursor-pointer hover:border-purple-500/50 hover:bg-purple-500/5 transition-all relative overflow-hidden"
+              >
+                <!-- Preview -->
+                <img
+                  v-if="newCourse.thumbnail_url && !uploadingCover"
+                  :src="newCourse.thumbnail_url"
+                  class="absolute inset-0 w-full h-full object-cover opacity-60"
+                  alt="Preview"
+                >
+                <!-- Loading -->
+                <div v-if="uploadingCover" class="relative flex flex-col items-center gap-2 text-purple-400">
+                  <div class="w-6 h-6 border-2 border-purple-500/30 border-t-purple-400 animate-spin rounded-full"></div>
+                  <span class="text-xs font-medium">Enviando...</span>
+                </div>
+                <!-- Idle / após upload -->
+                <div v-else class="relative flex flex-col items-center gap-1 text-gray-400">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+                  <span class="text-xs">{{ newCourse.thumbnail_url ? 'Clique para trocar' : 'Clique para selecionar' }}</span>
+                </div>
+                <input
+                  id="cover-upload"
+                  type="file"
+                  class="hidden"
+                  accept="image/*"
+                  @change="uploadCoverImage"
+                  :disabled="uploadingCover"
+                >
+              </label>
+              <p v-if="newCourse.thumbnail_url && !uploadingCover" class="text-xs text-green-400 mt-1">
+                Imagem carregada com sucesso
+              </p>
+            </div>
           </div>
           <div class="md:col-span-2">
             <label class="block text-sm text-gray-400 mb-1">Descrição</label>
@@ -162,7 +232,7 @@ async function deleteCourse(course: any) {
         </div>
         <div class="flex justify-end gap-3">
           <button @click="cancelCreate" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white transition-all">Cancelar</button>
-          <button @click="createCourse" class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white transition-all">Salvar Curso</button>
+          <button @click="createCourse" :disabled="uploadingCover" class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed">Salvar Curso</button>
         </div>
       </div>
 
