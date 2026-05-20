@@ -62,6 +62,7 @@ export type Database = {
           id: string
           module_id: string
           order_index: number | null
+          status: 'uploaded' | 'processed' | 'transcribing' | 'indexed' | 'failed' | null
           title: string
           video_url: string | null
         }
@@ -73,6 +74,7 @@ export type Database = {
           id?: string
           module_id: string
           order_index?: number | null
+          status?: 'uploaded' | 'processed' | 'transcribing' | 'indexed' | 'failed' | null
           title: string
           video_url?: string | null
         }
@@ -84,6 +86,7 @@ export type Database = {
           id?: string
           module_id?: string
           order_index?: number | null
+          status?: 'uploaded' | 'processed' | 'transcribing' | 'indexed' | 'failed' | null
           title?: string
           video_url?: string | null
         }
