@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      attachments: {
+        Row: {
+          content_id: string | null
+          created_at: string | null
+          file_size: number | null
+          file_type: string | null
+          file_url: string
+          id: string
+          name: string
+        }
+        Insert: {
+          content_id?: string | null
+          created_at?: string | null
+          file_size?: number | null
+          file_type?: string | null
+          file_url: string
+          id?: string
+          name: string
+        }
+        Update: {
+          content_id?: string | null
+          created_at?: string | null
+          file_size?: number | null
+          file_type?: string | null
+          file_url?: string
+          id?: string
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attachments_content_id_fkey"
+            columns: ["content_id"]
+            isOneToOne: false
+            referencedRelation: "contents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "attachments_content_id_fkey"
+            columns: ["content_id"]
+            isOneToOne: false
+            referencedRelation: "course_structure"
+            referencedColumns: ["content_id"]
+          },
+        ]
+      }
       comments: {
         Row: {
           comment_text: string
@@ -53,16 +98,117 @@ export type Database = {
           },
         ]
       }
+      content_chunks: {
+        Row: {
+          chunk_index: number
+          content_id: string
+          created_at: string
+          embedding: string | null
+          embedding_model: string
+          end_time: number
+          id: string
+          start_time: number
+          text: string
+          token_count: number | null
+        }
+        Insert: {
+          chunk_index: number
+          content_id: string
+          created_at?: string
+          embedding?: string | null
+          embedding_model?: string
+          end_time: number
+          id?: string
+          start_time: number
+          text: string
+          token_count?: number | null
+        }
+        Update: {
+          chunk_index?: number
+          content_id?: string
+          created_at?: string
+          embedding?: string | null
+          embedding_model?: string
+          end_time?: number
+          id?: string
+          start_time?: number
+          text?: string
+          token_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_chunks_content_id_fkey"
+            columns: ["content_id"]
+            isOneToOne: false
+            referencedRelation: "contents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_chunks_content_id_fkey"
+            columns: ["content_id"]
+            isOneToOne: false
+            referencedRelation: "course_structure"
+            referencedColumns: ["content_id"]
+          },
+        ]
+      }
+      content_transcriptions: {
+        Row: {
+          content_id: string
+          created_at: string
+          duration_sec: number | null
+          full_text: string
+          language: string | null
+          model: string
+          segments_json: Json
+        }
+        Insert: {
+          content_id: string
+          created_at?: string
+          duration_sec?: number | null
+          full_text: string
+          language?: string | null
+          model: string
+          segments_json: Json
+        }
+        Update: {
+          content_id?: string
+          created_at?: string
+          duration_sec?: number | null
+          full_text?: string
+          language?: string | null
+          model?: string
+          segments_json?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_transcriptions_content_id_fkey"
+            columns: ["content_id"]
+            isOneToOne: true
+            referencedRelation: "contents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_transcriptions_content_id_fkey"
+            columns: ["content_id"]
+            isOneToOne: true
+            referencedRelation: "course_structure"
+            referencedColumns: ["content_id"]
+          },
+        ]
+      }
       contents: {
         Row: {
           body_text: string | null
           content_type: string
           created_at: string
+          duration: number | null
           file_url: string | null
           id: string
           module_id: string
           order_index: number | null
-          status: 'uploaded' | 'processed' | 'transcribing' | 'indexed' | 'failed' | null
+          status: string | null
+          thumbnail_url: string | null
           title: string
           video_url: string | null
         }
@@ -70,11 +216,13 @@ export type Database = {
           body_text?: string | null
           content_type: string
           created_at?: string
+          duration?: number | null
           file_url?: string | null
           id?: string
           module_id: string
           order_index?: number | null
-          status?: 'uploaded' | 'processed' | 'transcribing' | 'indexed' | 'failed' | null
+          status?: string | null
+          thumbnail_url?: string | null
           title: string
           video_url?: string | null
         }
@@ -82,11 +230,13 @@ export type Database = {
           body_text?: string | null
           content_type?: string
           created_at?: string
+          duration?: number | null
           file_url?: string | null
           id?: string
           module_id?: string
           order_index?: number | null
-          status?: 'uploaded' | 'processed' | 'transcribing' | 'indexed' | 'failed' | null
+          status?: string | null
+          thumbnail_url?: string | null
           title?: string
           video_url?: string | null
         }
@@ -130,6 +280,50 @@ export type Database = {
           title?: string
         }
         Relationships: []
+      }
+      group_course_access: {
+        Row: {
+          course_id: string
+          group_id: string
+        }
+        Insert: {
+          course_id: string
+          group_id: string
+        }
+        Update: {
+          course_id?: string
+          group_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_course_access_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "course_catalog"
+            referencedColumns: ["course_id"]
+          },
+          {
+            foreignKeyName: "group_course_access_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "course_structure"
+            referencedColumns: ["course_id"]
+          },
+          {
+            foreignKeyName: "group_course_access_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "group_course_access_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "permission_groups"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       modules: {
         Row: {
@@ -181,6 +375,7 @@ export type Database = {
         Row: {
           avatar_url: string | null
           created_at: string
+          email: string | null
           id: string
           name: string
           role: string
@@ -188,6 +383,7 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           created_at?: string
+          email?: string | null
           id: string
           name: string
           role?: string
@@ -195,9 +391,31 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           created_at?: string
+          email?: string | null
           id?: string
           name?: string
           role?: string
+        }
+        Relationships: []
+      }
+      permission_groups: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
         }
         Relationships: []
       }
@@ -233,6 +451,136 @@ export type Database = {
           },
           {
             foreignKeyName: "private_notes_content_id_fkey"
+            columns: ["content_id"]
+            isOneToOne: false
+            referencedRelation: "course_structure"
+            referencedColumns: ["content_id"]
+          },
+        ]
+      }
+      user_access_mode: {
+        Row: {
+          mode: string
+          user_id: string
+        }
+        Insert: {
+          mode?: string
+          user_id: string
+        }
+        Update: {
+          mode?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_access_mode_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "perfis"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_course_access: {
+        Row: {
+          course_id: string
+          user_id: string
+        }
+        Insert: {
+          course_id: string
+          user_id: string
+        }
+        Update: {
+          course_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_course_access_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "course_catalog"
+            referencedColumns: ["course_id"]
+          },
+          {
+            foreignKeyName: "user_course_access_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "course_structure"
+            referencedColumns: ["course_id"]
+          },
+          {
+            foreignKeyName: "user_course_access_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_course_access_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "perfis"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_groups: {
+        Row: {
+          group_id: string
+          user_id: string
+        }
+        Insert: {
+          group_id: string
+          user_id: string
+        }
+        Update: {
+          group_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_groups_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "permission_groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_groups_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "perfis"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_progress: {
+        Row: {
+          completed_at: string | null
+          content_id: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          content_id: string
+          user_id?: string
+        }
+        Update: {
+          completed_at?: string | null
+          content_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_progress_content_id_fkey"
+            columns: ["content_id"]
+            isOneToOne: false
+            referencedRelation: "contents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_progress_content_id_fkey"
             columns: ["content_id"]
             isOneToOne: false
             referencedRelation: "course_structure"
@@ -309,6 +657,7 @@ export type Database = {
       }
       course_catalog: {
         Row: {
+          completed_contents: number | null
           course_description: string | null
           course_id: string | null
           course_title: string | null
@@ -320,12 +669,14 @@ export type Database = {
       }
       course_structure: {
         Row: {
+          content_duration: number | null
           content_id: string | null
           content_order: number | null
           content_title: string | null
           content_type: string | null
           course_id: string | null
           course_title: string | null
+          is_completed: boolean | null
           module_id: string | null
           module_order: number | null
           module_title: string | null
@@ -335,6 +686,57 @@ export type Database = {
     }
     Functions: {
       has_role: { Args: { required_roles: string[] }; Returns: boolean }
+      search_content_fulltext: {
+        Args: { filter_course_id?: string; search_query: string }
+        Returns: {
+          chunk_id: string
+          chunk_text: string
+          content_id: string
+          content_title: string
+          course_title: string
+          module_title: string
+          start_time: number
+          thumbnail_url: string
+        }[]
+      }
+      search_content_semantic: {
+        Args: {
+          filter_course_id?: string
+          match_count?: number
+          query_embedding: string
+        }
+        Returns: {
+          chunk_id: string
+          chunk_text: string
+          content_id: string
+          content_title: string
+          course_title: string
+          distance: number
+          module_title: string
+          start_time: number
+          thumbnail_url: string
+        }[]
+      }
+      search_transcripts: {
+        Args: {
+          course_filter?: string
+          match_count?: number
+          min_similarity?: number
+          query_embedding: string
+        }
+        Returns: {
+          chunk_id: string
+          chunk_text: string
+          content_id: string
+          content_title: string
+          course_id: string
+          course_title: string
+          end_time: number
+          module_id: string
+          similarity: number
+          start_time: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
@@ -452,7 +854,7 @@ export type CompositeTypes<
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["CompositeTypes"]
     : never = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
