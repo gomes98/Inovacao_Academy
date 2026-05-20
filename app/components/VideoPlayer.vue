@@ -210,6 +210,12 @@ watch(() => props.src, (newSrc) => {
   }
 })
 
+watch(() => props.startTime, (newTime) => {
+  if (player && newTime && newTime > 0) {
+    player.currentTime(newTime)
+  }
+})
+
 onBeforeUnmount(() => {
   if (player) player.dispose()
 })

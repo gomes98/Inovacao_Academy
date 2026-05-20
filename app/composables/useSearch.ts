@@ -27,7 +27,7 @@ export function useSearch() {
 
     try {
       const params = new URLSearchParams({ q })
-      if (courseId) params.set('courseId', courseId)
+      if (courseId.value) params.set('courseId', courseId.value)
 
       const data = await $fetch<SearchResult[]>(`/api/search?${params}`, {
         signal: abortController.signal,
@@ -60,6 +60,11 @@ export function useSearch() {
     error.value = null
     abortController?.abort()
   }
+
+  onUnmounted(() => {
+    if (debounceTimer) clearTimeout(debounceTimer)
+    abortController?.abort()
+  })
 
   return { query, results, isLoading, error, clear }
 }

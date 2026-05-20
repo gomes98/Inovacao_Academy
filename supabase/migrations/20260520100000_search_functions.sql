@@ -15,6 +15,8 @@ RETURNS TABLE (
 )
 LANGUAGE sql
 STABLE
+SECURITY DEFINER
+SET search_path = public
 AS $$
   SELECT
     cc.id          AS chunk_id,
@@ -54,6 +56,8 @@ RETURNS TABLE (
 )
 LANGUAGE sql
 STABLE
+SECURITY DEFINER
+SET search_path = public
 AS $$
   SELECT
     cc.id          AS chunk_id,

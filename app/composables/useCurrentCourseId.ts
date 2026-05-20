@@ -1,13 +1,16 @@
-export function useCurrentCourseId(): string | undefined {
+import type { ComputedRef } from 'vue'
+
+export function useCurrentCourseId(): ComputedRef<string | undefined> {
   const route = useRoute()
+  const currentCourseId = useState<string | undefined>('currentCourseId')
 
-  if (route.name === 'courses-id') {
-    return route.params.id as string
-  }
-
-  if (route.name === 'lesson-id') {
-    return useState<string | undefined>('currentCourseId').value
-  }
-
-  return undefined
+  return computed(() => {
+    if (route.name === 'courses-id') {
+      return route.params.id as string
+    }
+    if (route.name === 'lesson-id') {
+      return currentCourseId.value
+    }
+    return undefined
+  })
 }

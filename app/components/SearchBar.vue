@@ -13,11 +13,12 @@ function close() {
   clear()
 }
 
-function handleBlur() {
-  // Delay para permitir clique nos resultados antes de fechar
-  setTimeout(() => {
-    if (!query.value) close()
-  }, 150)
+function handleBlur(e: FocusEvent) {
+  const container = (e.currentTarget as HTMLElement)
+  const relatedTarget = e.relatedTarget as HTMLElement | null
+  if (!relatedTarget || !container.contains(relatedTarget)) {
+    setTimeout(() => close(), 150)
+  }
 }
 
 function handleKeydown(e: KeyboardEvent) {
@@ -50,7 +51,7 @@ const showDropdown = computed(() =>
     </button>
 
     <!-- Input expandido -->
-    <div v-else class="search-expanded">
+    <div v-else class="search-expanded" @focusout="handleBlur">
       <svg class="search-icon-inline" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
         stroke-linecap="round" stroke-linejoin="round">
@@ -62,7 +63,6 @@ const showDropdown = computed(() =>
         type="text"
         placeholder="Buscar conteúdo..."
         class="search-input"
-        @blur="handleBlur"
       />
       <button class="close-btn" @mousedown.prevent="close" aria-label="Fechar busca">
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
