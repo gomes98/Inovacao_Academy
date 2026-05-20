@@ -264,10 +264,21 @@ async function saveNote() {
                       class="group flex items-center gap-3 p-3 rounded-2xl transition-all hover:bg-white/5"
                       :class="[item.id === contentId ? 'bg-purple-600/20 border border-purple-500/30' : 'border border-transparent']"
                     >
-                      <div class="w-8 h-8 flex-shrink-0 rounded-lg flex items-center justify-center text-[10px] font-bold border transition-colors"
+                      <div class="w-8 h-8 flex-shrink-0 rounded-lg flex items-center justify-center text-[10px] font-bold border transition-colors overflow-hidden relative"
                         :class="[item.id === contentId ? 'bg-purple-600 border-purple-400 text-white' : 'bg-white/5 border-white/10 text-gray-500 group-hover:border-white/20 group-hover:text-gray-300']"
                       >
-                        {{ idx + 1 }}
+                        <template v-if="item.video_url">
+                          <img
+                            :src="item.video_url.replace(/\.[^.]+$/, '.jpg')"
+                            class="absolute inset-0 w-full h-full object-cover rounded-lg"
+                            @error="(e) => { (e.target as HTMLElement).style.display = 'none'; (e.target as HTMLElement).nextElementSibling?.removeAttribute('style') }"
+                          />
+                          <div class="absolute inset-0 flex items-center justify-center bg-black/30 rounded-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="white" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                          </div>
+                          <span style="display:none" class="relative z-10">{{ idx + 1 }}</span>
+                        </template>
+                        <span v-else>{{ idx + 1 }}</span>
                       </div>
                       <div class="flex-1 min-w-0">
                         <div class="flex items-center justify-between gap-2">

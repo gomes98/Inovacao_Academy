@@ -9,11 +9,19 @@ const courseId = route.params.id as string
 // Busca a estrutura do curso da view course_structure (inclui progresso)
 const user = useSupabaseUser()
 const { data: structure, pending, error } = await useAsyncData(`course-structure-${courseId}-${user.value?.id}`, async () => {
-  const { data } = await supabase
-    .from('course_structure')
-    .select('*')
-    .eq('course_id', courseId)
-  
+  const { data } = await supabase.from('course_structure').select('*').eq('course_id', courseId)
+
+  // Coleta IDs de módulos para buscar video_url dos conteúdos
+  const moduleIds = [...new Set(data?.map(item => item.module_id).filter(Boolean) as string[])]
+  const videoUrlMap = new Map<string, string | null>()
+  if (moduleIds.length) {
+    const { data: videoUrls } = await supabase
+      .from('contents')
+      .select('id, video_url')
+      .in('module_id', moduleIds)
+    videoUrls?.forEach(v => videoUrlMap.set(v.id, v.video_url ?? null))
+  }
+
   // Agrupa conteúdos por módulo
   const modulesMap = new Map()
   data?.forEach(item => {
@@ -32,7 +40,8 @@ const { data: structure, pending, error } = await useAsyncData(`course-structure
         type: item.content_type,
         order: item.content_order,
         is_completed: item.is_completed,
-        duration: item.content_duration
+        duration: item.content_duration,
+        video_url: videoUrlMap.get(item.content_id ?? '') ?? null
       })
     }
   })
@@ -115,10 +124,21 @@ function formatDuration(seconds: number): string {
               :to="`/lesson/${content.id}`"
               class="flex items-center gap-4 p-4 hover:bg-white/[0.03] transition-all group"
             >
-              <div class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-gray-500 group-hover:text-purple-400 group-hover:bg-purple-500/10 transition-all border border-white/5 relative">
-                <svg v-if="content.type === 'video'" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              <div class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-gray-500 group-hover:text-purple-400 group-hover:bg-purple-500/10 transition-all border border-white/5 relative overflow-hidden flex-shrink-0">
+                <template v-if="content.type === 'video' && content.video_url">
+                  <img
+                    :src="content.video_url.replace(/\.[^.]+$/, '.jpg')"
+                    class="w-full h-full object-cover rounded-xl"
+                    @error="(e) => { (e.target as HTMLElement).style.display = 'none'; (e.target as HTMLElement).nextElementSibling?.removeAttribute('style') }"
+                  />
+                  <svg style="display:none" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                  <div class="absolute inset-0 flex items-center justify-center bg-black/30 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="white" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                  </div>
+                </template>
+                <svg v-else-if="content.type === 'video'" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
                 <svg v-else xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
-                
+
                 <!-- Completion Badge -->
                 <div v-if="content.is_completed" class="absolute -top-1.5 -right-1.5 w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center border-2 border-[#050505] shadow-lg">
                   <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" class="text-white"><polyline points="20 6 9 17 4 12"/></svg>
