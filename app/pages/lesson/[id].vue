@@ -4,12 +4,20 @@ const supabase = useSupabaseClient()
 const user = useSupabaseUser()
 
 const contentId = computed(() => route.params.id as string)
+const startTime = computed(() => Number(route.query.t) || 0)
 
 // 1. Busca os detalhes da aula
 const { data: content, error: contentError } = await useAsyncData(() => `content-${contentId.value}`, async () => {
   const { data } = await supabase.from('contents').select('*, modules(title, courses(id, title)), attachments(*)').eq('id', contentId.value).single()
   return data
 }, { watch: [contentId] })
+
+// Expõe o courseId para a busca contextual da AppBar
+watch(content, (c) => {
+  if (c?.modules?.courses?.id) {
+    useState('currentCourseId').value = c.modules.courses.id
+  }
+}, { immediate: true })
 
 // 2. Busca os comentários (via view para pegar nomes)
 const { data: comments, refresh: refreshComments } = await useAsyncData(() => `comments-${contentId.value}`, async () => {
@@ -224,8 +232,9 @@ async function saveNote() {
               <div class="aspect-video rounded-[32px] bg-black border border-white/10 overflow-hidden shadow-2xl relative group">
                 <template v-if="content?.video_url">
                   <ClientOnly>
-                    <VideoPlayer 
+                    <VideoPlayer
                       :src="content.video_url"
+                      :start-time="startTime"
                       @progress-90="markAsFinishedAuto"
                     />
                   </ClientOnly>
