@@ -246,9 +246,15 @@ async function uploadDirRecursive(bucket, localDir, storageBasePath) {
 // POLLING DE SEGURANÇA
 // ========================
 
-setInterval(async () => {
-  await checkPendencias()
-}, 30000)
+;(async function schedulePoll() {
+  try {
+    await checkPendencias()
+  } catch (err) {
+    console.error('[polling] Erro inesperado:', err)
+  } finally {
+    setTimeout(schedulePoll, 30_000)
+  }
+})()
 
 async function checkPendencias() {
   try {
