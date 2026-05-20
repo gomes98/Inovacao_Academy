@@ -58,22 +58,22 @@ async function runNextInQueue(videoHint) {
     await setStatus(nextId, 'error')
   } finally {
     queue.clearProcessing()
-    // Processa o próximo da fila, se houver
-    const nextVideo = videoCache.get(queue.dequeue())
-    if (nextVideo) {
-      queue.enqueue(nextVideo.id)
-      runNextInQueue(nextVideo)
-    } else if (queue.size() > 0) {
-      // Tem IDs na fila mas não temos os dados em cache — busca no banco
-      const nextInQueue = queue.dequeue()
-      if (nextInQueue) {
-        fetchAndEnqueue(nextInQueue)
-      }
+
+    const nextId = queue.peek()
+    if (!nextId) return
+
+    const cached = videoCache.get(nextId)
+    if (cached) {
+      runNextInQueue(cached)
+    } else {
+      fetchAndEnqueue(queue.dequeue())
     }
   }
 }
 
 async function fetchAndEnqueue(videoId) {
+  if (!videoId) return
+
   const { data, error } = await supabase
     .from('contents')
     .select('*')
@@ -82,12 +82,13 @@ async function fetchAndEnqueue(videoId) {
 
   if (error || !data) {
     console.error(`[queue] Não foi possível buscar vídeo ${videoId}:`, error)
+    // ID já foi removido da fila pelo dequeue() no finally — não re-enfileirar
     return
   }
 
   videoCache.set(data.id, data)
-  queue.enqueue(data.id)
-  runNextInQueue(data)
+  const added = queue.enqueue(data.id)
+  if (added) runNextInQueue(data)
 }
 
 // ========================
