@@ -151,72 +151,67 @@ async function processVideo(video) {
   const extensao = getFileExtension(video.video_url)
   const baseName = getFileNameWithoutExtension(video.video_url)
 
-  if (!fs.existsSync('./temp')) {
-    fs.mkdirSync('./temp')
-  }
+  await fs.promises.mkdir('./temp', { recursive: true })
 
   const localFilePath = path.join('./temp', baseName + extensao)
+  const outputDir = path.join('./temp', baseName)
 
-  if (fs.existsSync(localFilePath)) {
-    console.log('[worker] Arquivo já existe localmente, pulando download...')
-  } else {
-    console.log('[worker] Baixando vídeo...')
-    const { data, error } = await supabase
-      .storage
-      .from(bucket)
-      .download(pathString)
-
-    if (error) {
-      throw new Error(`Erro ao baixar vídeo: ${error.message}`)
+  try {
+    if (await fs.promises.access(localFilePath).then(() => true).catch(() => false)) {
+      console.log('[worker] Arquivo já existe localmente, pulando download...')
+    } else {
+      console.log('[worker] Baixando vídeo...')
+      const { data, error } = await supabase.storage.from(bucket).download(pathString)
+      if (error) throw new Error(`Erro ao baixar vídeo: ${error.message}`)
+      const arrayBuffer = await data.arrayBuffer()
+      await fs.promises.writeFile(localFilePath, Buffer.from(arrayBuffer))
+      console.log('[worker] Download concluído.')
     }
 
-    const arrayBuffer = await data.arrayBuffer()
-    fs.writeFileSync(localFilePath, Buffer.from(arrayBuffer))
-    console.log('[worker] Download concluído.')
+    const { duration } = await processVideoMAIN(localFilePath)
+
+    const storageBasePath = path.dirname(pathString)
+
+    console.log('[worker] Iniciando upload dos arquivos processados...')
+    await uploadDirRecursive(bucket, outputDir, storageBasePath)
+
+    const masterStoragePath = path.posix.join(storageBasePath, `${baseName}.m3u8`)
+    const thumbnailStoragePath = path.posix.join(storageBasePath, `${baseName}.jpg`)
+
+    const { data: publicUrlData } = supabase.storage.from(bucket).getPublicUrl(masterStoragePath)
+    const { data: thumbnailUrlData } = supabase.storage.from(bucket).getPublicUrl(thumbnailStoragePath)
+
+    const updatePayload = {
+      status: 'processed',
+      video_url: publicUrlData.publicUrl,
+      thumbnail_url: thumbnailUrlData.publicUrl
+    }
+    if (duration !== null) updatePayload.duration = duration
+
+    const { error: updateError } = await supabase
+      .from('contents')
+      .update(updatePayload)
+      .eq('id', video.id)
+
+    if (updateError) {
+      console.error('[db] Erro ao atualizar video_url:', updateError.message)
+    }
+
+    const { error: removeError } = await supabase.storage.from(bucket).remove([pathString])
+    if (removeError) {
+      console.error('[storage] Erro ao remover arquivo original:', removeError.message)
+    } else {
+      console.log(`[storage] Arquivo original removido: ${pathString}`)
+    }
+
+    console.log(`[worker] Processamento concluído: ${video.id}`)
+    console.log(`[worker] video_url atualizado: ${publicUrlData.publicUrl}`)
+
+  } finally {
+    await fs.promises.rm(localFilePath, { force: true }).catch(() => {})
+    await fs.promises.rm(outputDir, { recursive: true, force: true }).catch(() => {})
+    console.log('[worker] Pasta temp limpa.')
   }
-
-  const { duration } = await processVideoMAIN(localFilePath)
-
-  const outputDir = path.join('./temp', baseName)
-  const storageBasePath = path.dirname(pathString)
-
-  console.log('[worker] Iniciando upload dos arquivos processados...')
-  await uploadDirRecursive(bucket, outputDir, storageBasePath)
-
-  // URL pública do master playlist gerado pelo FFmpeg
-  const masterStoragePath = path.posix.join(storageBasePath, `${baseName}.m3u8`)
-  const { data: publicUrlData } = supabase.storage.from(bucket).getPublicUrl(masterStoragePath)
-
-  const thumbnailStoragePath = path.posix.join(storageBasePath, `${baseName}.jpg`)
-  const { data: thumbnailUrlData } = supabase.storage.from(bucket).getPublicUrl(thumbnailStoragePath)
-
-  const updatePayload = { status: 'processed', video_url: publicUrlData.publicUrl, thumbnail_url: thumbnailUrlData.publicUrl }
-  if (duration !== null) updatePayload.duration = duration
-
-  const { error: updateError } = await supabase
-    .from('contents')
-    .update(updatePayload)
-    .eq('id', video.id)
-
-  if (updateError) {
-    console.error('[db] Erro ao atualizar video_url:', updateError.message)
-  }
-
-  // Remove o arquivo original do bucket
-  const { error: removeError } = await supabase.storage.from(bucket).remove([pathString])
-  if (removeError) {
-    console.error('[storage] Erro ao remover arquivo original:', removeError.message)
-  } else {
-    console.log(`[storage] Arquivo original removido: ${pathString}`)
-  }
-
-  // Remove o arquivo fonte e a pasta de output do temp
-  fs.rmSync(localFilePath, { force: true })
-  fs.rmSync(outputDir, { recursive: true, force: true })
-  console.log('[worker] Pasta temp limpa.')
-
-  console.log(`[worker] Processamento concluído: ${video.id}`)
-  console.log(`[worker] video_url atualizado: ${publicUrlData.publicUrl}`)
 }
 
 // Percorre diretório recursivamente e faz upload de todos os arquivos
