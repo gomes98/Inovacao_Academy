@@ -3,6 +3,12 @@ const route = useRoute()
 const supabase = useSupabaseClient()
 const user = useSupabaseUser()
 
+const gamification = useGamification()
+
+watch(user, async (u) => {
+  if (u?.id) await gamification.loadUserData()
+}, { immediate: true })
+
 const contentId = computed(() => route.params.id as string)
 const startTime = computed(() => Number(route.query.t) || 0)
 
@@ -96,6 +102,7 @@ async function toggleCompletion() {
         .insert({
           content_id: contentId.value
         })
+      await gamification.trackEvent('video_completed', contentId.value)
     }
     await refreshProgress()
   } catch (err) {
@@ -121,6 +128,7 @@ async function markAsFinishedAuto() {
     
     if (!error) {
       await refreshProgress()
+      await gamification.trackEvent('video_watched', contentId.value)
     }
   } catch (err) {
     console.error('Erro ao marcar progresso automático:', err)
@@ -175,15 +183,19 @@ async function postComment(parentId: string | null = null) {
 
   isPostingComment.value = true
   try {
-    const { error } = await supabase.from('comments').insert({
+    const { data: inserted, error } = await supabase.from('comments').insert({
       content_id: contentId.value,
       comment_text: text,
       ...(parentId ? { parent_id: parentId } : {})
-    })
+    }).select('id').single()
 
-    if (error) {
-      console.error('Erro Supabase (Comentário):', error)
-      throw error
+    if (error) throw error
+
+    if (inserted?.id) {
+      await gamification.trackEvent(
+        parentId ? 'comment_replied' : 'comment_posted',
+        inserted.id
+      )
     }
 
     if (parentId) {
@@ -465,6 +477,13 @@ async function saveNote() {
         </div>
       </div>
     </main>
+
+    <PointToast
+      :points="gamification.lastPointsEarned.value?.points ?? null"
+      :label="gamification.lastPointsEarned.value?.label ?? null"
+      :badge="gamification.newlyEarnedBadge.value"
+      @close="gamification.clearToasts()"
+    />
   </div>
 </template>
 
