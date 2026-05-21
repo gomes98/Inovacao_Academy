@@ -76,9 +76,10 @@ export function useGamification() {
   const groupRankingData = ref<RankingRow[]>([])
   const newlyEarnedBadge = ref<BadgeRow | null>(null)
   const lastPointsEarned = ref<{ points: number; label: string } | null>(null)
+  const resolvedGroupId = ref<string | null>(null)
 
   const totalPoints = computed(() => userPointsData.value?.total_points ?? 0)
-  const groupId = computed(() => userPointsData.value?.group_id ?? null)
+  const groupId = computed(() => resolvedGroupId.value)
   const userLevel = computed(() => computeLevel(totalPoints.value))
 
   const earnedBadgeSlugs = computed(
@@ -88,7 +89,7 @@ export function useGamification() {
   async function loadUserData() {
     if (!user.value?.id) return
 
-    const [pointsRes, badgesRes, allBadgesRes] = await Promise.all([
+    const [pointsRes, badgesRes, allBadgesRes, groupRes] = await Promise.all([
       supabase
         .from('user_points')
         .select('total_points, group_id')
@@ -99,11 +100,20 @@ export function useGamification() {
         .select('badge_id, earned_at, badges(slug, name, description, icon_url, condition_type, condition_value)')
         .eq('user_id', user.value.id),
       supabase.from('badges').select('slug, name, description, icon_url, condition_type, condition_value'),
+      supabase
+        .from('user_groups')
+        .select('group_id')
+        .eq('user_id', user.value.id)
+        .maybeSingle(),
     ])
 
     if (pointsRes.data) userPointsData.value = pointsRes.data as UserPointsRow
     if (badgesRes.data) userBadgesData.value = badgesRes.data as unknown as UserBadgeRow[]
     if (allBadgesRes.data) allBadgesData.value = allBadgesRes.data as BadgeRow[]
+
+    // groupId vem de user_groups (funciona mesmo antes do primeiro evento de pontos)
+    // e de user_points como fallback após eventos registrados
+    resolvedGroupId.value = groupRes.data?.group_id ?? pointsRes.data?.group_id ?? null
   }
 
   async function loadGroupRanking() {

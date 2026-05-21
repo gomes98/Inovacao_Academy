@@ -183,20 +183,13 @@ async function postComment(parentId: string | null = null) {
 
   isPostingComment.value = true
   try {
-    const { data: inserted, error } = await supabase.from('comments').insert({
+    const { error } = await supabase.from('comments').insert({
       content_id: contentId.value,
       comment_text: text,
       ...(parentId ? { parent_id: parentId } : {})
-    }).select('id').single()
+    })
 
     if (error) throw error
-
-    if (inserted?.id) {
-      await gamification.trackEvent(
-        parentId ? 'comment_replied' : 'comment_posted',
-        inserted.id
-      )
-    }
 
     if (parentId) {
       replyText.value = ''
@@ -205,6 +198,15 @@ async function postComment(parentId: string | null = null) {
     }
     replyingTo.value = null
     await refreshComments()
+
+    // Rastreia gamificação com o id do comentário recém inserido
+    const newest = comments.value?.[comments.value.length - 1]
+    if (newest?.comment_id) {
+      await gamification.trackEvent(
+        parentId ? 'comment_replied' : 'comment_posted',
+        newest.comment_id
+      )
+    }
   } catch (err) {
     alert('Erro ao postar comentário. Verifique o console.')
     console.error(err)
