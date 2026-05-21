@@ -209,7 +209,6 @@ async function saveNote() {
   if (isSavingNote.value || !user.value) return
   
   isSavingNote.value = true
-  console.log('Salvando nota para:', contentId.value)
   try {
     // Usamos upsert com o constraint de unicidade (user_id, content_id)
     // O banco já tem o default para user_id (auth.uid()), mas para o upsert 
