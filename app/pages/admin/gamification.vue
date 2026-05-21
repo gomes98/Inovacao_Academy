@@ -33,17 +33,23 @@ const { data: badges } = await useAsyncData('all-badges', async () => {
 const manualUserId = ref('')
 const manualBadgeId = ref('')
 const manualGranting = ref(false)
+const manualGrantError = ref<string | null>(null)
 
 async function grantBadgeManually() {
   if (!manualUserId.value || !manualBadgeId.value || manualGranting.value) return
   manualGranting.value = true
-  await supabase.from('user_badges').insert({
+  manualGrantError.value = null
+  const { error } = await supabase.from('user_badges').insert({
     user_id: manualUserId.value,
     badge_id: manualBadgeId.value,
   })
   manualGranting.value = false
-  manualUserId.value = ''
-  manualBadgeId.value = ''
+  if (error) {
+    manualGrantError.value = error.message
+  } else {
+    manualUserId.value = ''
+    manualBadgeId.value = ''
+  }
 }
 
 const EVENT_LABELS: Record<string, string> = {
@@ -110,6 +116,9 @@ const EVENT_LABELS: Record<string, string> = {
     <!-- Concessão manual de badge -->
     <section>
       <h2 class="text-lg font-semibold mb-4 text-gray-300">Conceder Badge Manualmente</h2>
+      <div v-if="manualGrantError" class="mb-3 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+        Erro: {{ manualGrantError }}
+      </div>
       <div class="flex items-end gap-4 p-6 rounded-2xl bg-white/[0.03] border border-white/10">
         <div class="flex-1">
           <label class="block text-xs text-gray-500 uppercase tracking-widest mb-2">User ID</label>
