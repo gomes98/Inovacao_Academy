@@ -59,29 +59,59 @@ export type Database = {
           },
         ]
       }
+      badges: {
+        Row: {
+          condition_type: string
+          condition_value: number
+          description: string
+          icon_url: string | null
+          id: string
+          name: string
+          slug: string
+        }
+        Insert: {
+          condition_type: string
+          condition_value: number
+          description: string
+          icon_url?: string | null
+          id?: string
+          name: string
+          slug: string
+        }
+        Update: {
+          condition_type?: string
+          condition_value?: number
+          description?: string
+          icon_url?: string | null
+          id?: string
+          name?: string
+          slug?: string
+        }
+        Relationships: []
+      }
       comments: {
         Row: {
           comment_text: string
           content_id: string
           created_at: string
-          parent_id: string | null
           id: string
+          parent_id: string | null
           user_id: string
         }
         Insert: {
           comment_text: string
           content_id: string
           created_at?: string
-          parent_id?: string | null
           id?: string
+          parent_id?: string | null
           user_id?: string
         }
         Update: {
           comment_text?: string
           content_id?: string
           created_at?: string
-          parent_id?: string | null
           id?: string
+          parent_id?: string | null
           user_id?: string
         }
         Relationships: [
@@ -98,6 +128,20 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "course_structure"
             referencedColumns: ["content_id"]
+          },
+          {
+            foreignKeyName: "comments_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comments_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "content_comments_view"
+            referencedColumns: ["comment_id"]
           },
         ]
       }
@@ -422,6 +466,65 @@ export type Database = {
         }
         Relationships: []
       }
+      point_events: {
+        Row: {
+          created_at: string | null
+          event_type: string
+          group_id: string
+          id: string
+          points: number
+          reference_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          event_type: string
+          group_id: string
+          id?: string
+          points: number
+          reference_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          event_type?: string
+          group_id?: string
+          id?: string
+          points?: number
+          reference_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "point_events_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "permission_groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      point_rules: {
+        Row: {
+          event_type: string
+          id: string
+          is_active: boolean | null
+          points: number
+        }
+        Insert: {
+          event_type: string
+          id?: string
+          is_active?: boolean | null
+          points: number
+        }
+        Update: {
+          event_type?: string
+          id?: string
+          is_active?: boolean | null
+          points?: number
+        }
+        Relationships: []
+      }
       private_notes: {
         Row: {
           content_id: string
@@ -480,6 +583,35 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: true
             referencedRelation: "perfis"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_badges: {
+        Row: {
+          badge_id: string
+          earned_at: string | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          badge_id: string
+          earned_at?: string | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          badge_id?: string
+          earned_at?: string | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_badges_badge_id_fkey"
+            columns: ["badge_id"]
+            isOneToOne: false
+            referencedRelation: "badges"
             referencedColumns: ["id"]
           },
         ]
@@ -558,6 +690,38 @@ export type Database = {
           },
         ]
       }
+      user_points: {
+        Row: {
+          group_id: string
+          id: string
+          total_points: number
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          group_id: string
+          id?: string
+          total_points?: number
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          group_id?: string
+          id?: string
+          total_points?: number
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_points_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "permission_groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_progress: {
         Row: {
           completed_at: string | null
@@ -591,6 +755,27 @@ export type Database = {
           },
         ]
       }
+      user_streaks: {
+        Row: {
+          current_streak: number
+          last_activity_date: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          current_streak?: number
+          last_activity_date?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          current_streak?: number
+          last_activity_date?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       content_comments_view: {
@@ -617,6 +802,20 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "course_structure"
             referencedColumns: ["content_id"]
+          },
+          {
+            foreignKeyName: "comments_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comments_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "content_comments_view"
+            referencedColumns: ["comment_id"]
           },
         ]
       }
@@ -687,8 +886,32 @@ export type Database = {
         }
         Relationships: []
       }
+      group_ranking_view: {
+        Row: {
+          avatar_url: string | null
+          group_id: string | null
+          rank_position: number | null
+          total_points: number | null
+          user_id: string | null
+          user_name: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_points_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "permission_groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
+      fn_check_badges: {
+        Args: { p_group_id: string; p_user_id: string }
+        Returns: undefined
+      }
+      fn_update_streak: { Args: { p_user_id: string }; Returns: undefined }
       has_role: { Args: { required_roles: string[] }; Returns: boolean }
       search_content_fulltext: {
         Args: { filter_course_id?: string; search_query: string }
@@ -858,7 +1081,7 @@ export type CompositeTypes<
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["CompositeTypes"]
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
