@@ -64,6 +64,7 @@ export type Database = {
           comment_text: string
           content_id: string
           created_at: string
+          parent_id: string | null
           id: string
           user_id: string
         }
@@ -71,6 +72,7 @@ export type Database = {
           comment_text: string
           content_id: string
           created_at?: string
+          parent_id?: string | null
           id?: string
           user_id?: string
         }
@@ -78,6 +80,7 @@ export type Database = {
           comment_text?: string
           content_id?: string
           created_at?: string
+          parent_id?: string | null
           id?: string
           user_id?: string
         }
@@ -596,6 +599,7 @@ export type Database = {
           comment_text: string | null
           content_id: string | null
           created_at: string | null
+          parent_id: string | null
           user_id: string | null
           user_name: string | null
         }
