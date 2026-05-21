@@ -5,9 +5,9 @@ const user = useSupabaseUser()
 
 const gamification = useGamification()
 
-watch(user, async (u) => {
-  if (u?.id) await gamification.loadUserData()
-}, { immediate: true })
+if (import.meta.client) {
+  gamification.loadUserData()
+}
 
 const contentId = computed(() => route.params.id as string)
 const startTime = computed(() => Number(route.query.t) || 0)
@@ -43,23 +43,23 @@ const { data: playlist } = await useAsyncData(() => `playlist-${content.value?.m
 }, { watch: [content] })
 
 // 4. Busca a nota privada do usuário (v2 para limpar cache)
-const { data: privateNote, refresh: refreshNote } = await useAsyncData(() => `private-note-v2-${user.value?.id}-${contentId.value}`, async () => {
-  const userId = user.value?.id
-  if (!userId) return null
-  
+const { data: privateNote, refresh: refreshNote } = await useAsyncData(() => `private-note-v2-${contentId.value}`, async () => {
+  const { data: { user: currentUser } } = await supabase.auth.getUser()
+  if (!currentUser) return null
+
   const { data, error } = await supabase
     .from('private_notes')
     .select('*')
     .eq('content_id', contentId.value)
-    .eq('user_id', userId)
+    .eq('user_id', currentUser.id)
     .maybeSingle()
-  
+
   if (error) {
     console.error('Erro ao buscar nota:', error)
     return null
   }
   return data
-}, { watch: [user, contentId] })
+}, { watch: [contentId] })
 
 // 5. Busca o progresso do usuário para os conteúdos da playlist
 const { data: userProgress, refresh: refreshProgress } = await useAsyncData(() => `user-progress-${user.value?.id}-${content.value?.module_id}`, async () => {
@@ -179,7 +179,9 @@ watch(privateNote, (val) => {
 
 async function postComment(parentId: string | null = null) {
   const text = parentId ? replyText.value : newComment.value
-  if (!text.trim() || isPostingComment.value || !user.value) return
+  if (!text.trim() || isPostingComment.value) return
+  const { data: { user: currentUser } } = await supabase.auth.getUser()
+  if (!currentUser) return
 
   isPostingComment.value = true
   try {
@@ -220,21 +222,19 @@ provide('replyText', replyText)
 provide('postComment', postComment)
 
 async function saveNote() {
-  if (isSavingNote.value || !user.value) return
-  
+  if (isSavingNote.value) return
+  const { data: { user: currentUser } } = await supabase.auth.getUser()
+  if (!currentUser) return
+
   isSavingNote.value = true
   try {
-    // Usamos upsert com o constraint de unicidade (user_id, content_id)
-    // O banco já tem o default para user_id (auth.uid()), mas para o upsert 
-    // funcionar bem com a restrição unique_user_content_note, 
-    // às vezes é melhor ser explícito ou deixar o RLS cuidar.
     const { error } = await supabase
       .from('private_notes')
       .upsert({
         content_id: contentId.value,
-        user_id: user.value.id, // Explicitamente passamos aqui para o upsert saber qual linha atualizar
+        user_id: currentUser.id,
         note_text: noteText.value,
-        updated_at: new Date()
+        updated_at: new Date().toISOString()
       }, {
         onConflict: 'user_id,content_id'
       })
@@ -465,7 +465,7 @@ async function saveNote() {
                 ></textarea>
                 <div class="flex justify-end mt-4 pt-4 border-t border-white/5">
                   <button 
-                    @click="postComment"
+                    @click="postComment()"
                     :disabled="isPostingComment || !newComment.trim()"
                     class="px-6 py-2 rounded-xl bg-purple-600 text-white text-xs font-bold hover:bg-purple-500 disabled:opacity-50 transition-all"
                   >

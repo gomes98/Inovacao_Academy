@@ -40,22 +40,18 @@ function toggleDropdown() {
   isDropdownOpen.value = !isDropdownOpen.value
 }
 
-// Close dropdown when clicking outside
-if (process.client) {
-  window.addEventListener('click', (e) => {
-    const target = e.target as HTMLElement
-    if (!target.closest('.profile-dropdown-container')) {
-      isDropdownOpen.value = false
-    }
-  })
-}
-
 watch(user, (newUser) => {
   if (newUser) fetchProfile()
 }, { immediate: true })
 
 onMounted(() => {
   if (user.value) fetchProfile()
+  window.addEventListener('click', (e) => {
+    const target = e.target as HTMLElement
+    if (!target.closest('.profile-dropdown-container')) {
+      isDropdownOpen.value = false
+    }
+  })
 })
 </script>
 

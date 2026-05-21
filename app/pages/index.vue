@@ -27,19 +27,23 @@ async function handleLogout() {
 }
 
 // Gamification
-const gamification = useGamification()
+const {
+  totalPoints,
+  userLevel,
+  groupId,
+  groupRankingData,
+  allBadgesData,
+  earnedBadgeSlugs,
+  loadUserData,
+  loadGroupRanking,
+} = useGamification()
 
-watch(user, async (u) => {
-  if (u?.id) {
-    await gamification.loadUserData()
-    await gamification.loadGroupRanking()
-  }
-}, { immediate: true })
+if (import.meta.client) {
+  loadUserData().then(() => loadGroupRanking())
+}
 
 const nextBadge = computed(() => {
-  return gamification.allBadgesData.value.find(
-    b => !gamification.earnedBadgeSlugs.value.has(b.slug)
-  ) ?? null
+  return allBadgesData.value.find(b => !earnedBadgeSlugs.value.has(b.slug)) ?? null
 })
 </script>
 
@@ -59,14 +63,16 @@ const nextBadge = computed(() => {
         <p class="text-gray-400 mt-2">Continue sua jornada de aprendizado na Inovação Academy.</p>
       </div>
 
-      <GamificationWidget
-        v-if="user && gamification.groupId.value"
-        :total-points="gamification.totalPoints.value"
-        :user-level="gamification.userLevel.value"
-        :group-ranking="gamification.groupRankingData.value"
-        :current-user-id="user.id"
-        :next-badge="nextBadge"
-      />
+      <ClientOnly>
+        <GamificationWidget
+          v-if="groupId"
+          :total-points="totalPoints"
+          :user-level="userLevel"
+          :group-ranking="groupRankingData"
+          :current-user-id="user?.id ?? ''"
+          :next-badge="nextBadge"
+        />
+      </ClientOnly>
 
       <!-- Courses Grid -->
       <section>

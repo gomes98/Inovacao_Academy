@@ -87,23 +87,25 @@ export function useGamification() {
   )
 
   async function loadUserData() {
-    if (!user.value?.id) return
+    if (!import.meta.client) return
+    const userId = user.value?.id ?? (await supabase.auth.getUser()).data.user?.id
+    if (!userId) return
 
     const [pointsRes, badgesRes, allBadgesRes, groupRes] = await Promise.all([
       supabase
         .from('user_points')
         .select('total_points, group_id')
-        .eq('user_id', user.value.id)
+        .eq('user_id', userId)
         .maybeSingle(),
       supabase
         .from('user_badges')
         .select('badge_id, earned_at, badges(slug, name, description, icon_url, condition_type, condition_value)')
-        .eq('user_id', user.value.id),
+        .eq('user_id', userId),
       supabase.from('badges').select('slug, name, description, icon_url, condition_type, condition_value'),
       supabase
         .from('user_groups')
         .select('group_id')
-        .eq('user_id', user.value.id)
+        .eq('user_id', userId)
         .maybeSingle(),
     ])
 
@@ -117,7 +119,7 @@ export function useGamification() {
   }
 
   async function loadGroupRanking() {
-    if (!groupId.value) return
+    if (!import.meta.client || !groupId.value) return
     const { data } = await supabase
       .from('group_ranking_view')
       .select('user_id, user_name, avatar_url, total_points, rank_position')
@@ -128,10 +130,15 @@ export function useGamification() {
   }
 
   async function trackEvent(eventType: EventType, referenceId: string) {
-    if (!user.value?.id || !groupId.value) return
+    if (!import.meta.client) return
+    const userId = user.value?.id ?? (await supabase.auth.getUser()).data.user?.id
+    if (!userId) return
+    // Se groupId ainda não foi carregado, tenta carregar agora
+    if (!groupId.value) await loadUserData()
+    if (!groupId.value) return
 
     const { error } = await supabase.from('point_events').insert({
-      user_id: user.value.id,
+      user_id: userId,
       group_id: groupId.value,
       event_type: eventType,
       points: 0, // será sobrescrito pelo trigger fn_validate_point_event no banco
