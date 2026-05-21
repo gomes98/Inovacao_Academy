@@ -11,6 +11,9 @@
   },
   "dependencies": {
     "@nuxtjs/supabase": "^2.0.8",
+    "@tiptap/extension-link": "^3.23.5",
+    "@tiptap/starter-kit": "^3.23.5",
+    "@tiptap/vue-3": "^3.23.5",
     "nuxt": "^4.4.5",
     "openai": "^6.38.0",
     "video.js": "^8.23.7",
