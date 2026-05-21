@@ -1,5 +1,8 @@
 -- Adiciona suporte a respostas aninhadas em comentários
-ALTER TABLE comments ADD COLUMN parent_id uuid REFERENCES comments(id) ON DELETE CASCADE;
+ALTER TABLE comments ADD COLUMN IF NOT EXISTS parent_id uuid REFERENCES comments(id) ON DELETE CASCADE;
+
+-- Índice para queries de respostas por pai
+CREATE INDEX IF NOT EXISTS idx_comments_parent_id ON comments(parent_id);
 
 -- Recria a view para expor parent_id
 DROP VIEW IF EXISTS content_comments_view;
