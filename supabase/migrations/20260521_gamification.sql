@@ -154,11 +154,16 @@ begin
 end;
 $$;
 
--- 5. TRIGGER: chamar check_badges após evento
+-- 5. TRIGGER: chamar check_badges após evento (e fn_update_streak para eventos de vídeo)
 
 create or replace function public.fn_trigger_check_badges()
 returns trigger language plpgsql security definer as $$
 begin
+  -- Atualiza streak para eventos de vídeo
+  if new.event_type in ('video_watched', 'video_completed') then
+    perform public.fn_update_streak(new.user_id);
+  end if;
+
   perform public.fn_check_badges(new.user_id, new.group_id);
   return new;
 end;
@@ -188,7 +193,7 @@ begin
     on conflict (user_id) do update set current_streak = 1, last_activity_date = v_today, updated_at = now();
   elsif v_last_date = v_today then
     null; -- já registrou hoje
-  elsif v_last_date = v_today - interval '1 day' then
+  elsif v_last_date = v_today - 1 then
     update public.user_streaks
     set current_streak = current_streak + 1, last_activity_date = v_today, updated_at = now()
     where user_id = p_user_id;
@@ -209,9 +214,16 @@ alter table public.user_streaks enable row level security;
 alter table public.point_rules enable row level security;
 alter table public.badges enable row level security;
 
--- point_events: usuário insere os próprios, lê os próprios; admin lê tudo
+-- point_events: usuário insere os próprios (somente se pertencer ao grupo), lê os próprios; admin lê tudo
 create policy "users insert own point_events" on public.point_events
-  for insert with check (auth.uid() = user_id);
+  for insert with check (
+    auth.uid() = user_id
+    and exists (
+      select 1 from public.user_groups
+      where user_groups.user_id = auth.uid()
+        and user_groups.group_id = point_events.group_id
+    )
+  );
 
 create policy "users read own point_events" on public.point_events
   for select using (auth.uid() = user_id);
@@ -219,12 +231,10 @@ create policy "users read own point_events" on public.point_events
 create policy "admin read all point_events" on public.point_events
   for select using (has_role(ARRAY['admin']));
 
--- user_points: todos leem (necessário para ranking do grupo), usuário atualiza o próprio
+-- user_points: todos leem (necessário para ranking do grupo)
+-- Escrita é exclusiva via security definer functions (fn_update_user_points), que ignoram RLS
 create policy "anyone read user_points" on public.user_points
   for select using (true);
-
-create policy "users update own user_points" on public.user_points
-  for all using (auth.uid() = user_id);
 
 -- user_badges: todos leem, só sistema insere (security definer functions)
 create policy "anyone read user_badges" on public.user_badges
@@ -243,3 +253,32 @@ create policy "admin manage point_rules" on public.point_rules for all using (ha
 -- user_streaks: usuário lê/escreve o próprio
 create policy "users manage own streaks" on public.user_streaks
   for all using (auth.uid() = user_id);
+
+-- 8. TRIGGER: validar e sobrescrever points com valor de point_rules (evita injeção de pontos)
+
+create or replace function public.fn_validate_point_event()
+returns trigger language plpgsql security definer as $$
+declare
+  v_points integer;
+begin
+  select points into v_points
+  from public.point_rules
+  where event_type = new.event_type and is_active = true;
+
+  if v_points is null then
+    raise exception 'event_type % not found in point_rules or is inactive', new.event_type;
+  end if;
+
+  new.points := v_points;
+  return new;
+end;
+$$;
+
+create trigger before_point_event_insert_validate
+  before insert on public.point_events
+  for each row execute function public.fn_validate_point_event();
+
+-- 9. ÍNDICES DE PERFORMANCE
+
+create index if not exists idx_point_events_user_type on public.point_events(user_id, event_type);
+create index if not exists idx_user_badges_user on public.user_badges(user_id);
