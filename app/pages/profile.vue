@@ -47,6 +47,21 @@ watch(user, (newUser) => {
   }
 }, { immediate: true })
 
+const gamification = useGamification()
+
+watch(user, async (u) => {
+  if (u?.id) {
+    await gamification.loadUserData()
+    await gamification.loadGroupRanking()
+  }
+}, { immediate: true })
+
+const userRank = computed(
+  () => gamification.groupRankingData.value.find(
+    r => r.user_id === user.value?.id
+  )?.rank_position ?? null
+)
+
 async function updateProfile() {
   loading.value = true
   
@@ -171,6 +186,46 @@ async function uploadAvatar(event: any) {
               <h3 class="font-semibold text-gray-300">{{ profile.name || 'Sem nome definido' }}</h3>
               <p class="text-xs text-gray-500 mt-1">Recomendado: 400x400px (JPG, PNG)</p>
             </div>
+          </div>
+
+          <!-- Gamification Card -->
+          <div v-if="gamification.userPointsData.value" class="mb-8 p-6 rounded-3xl bg-white/[0.03] border border-white/10">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-xl">
+                  {{ gamification.userLevel.value.level === 1 ? '🌱' : gamification.userLevel.value.level === 2 ? '🔭' : gamification.userLevel.value.level === 3 ? '⚙️' : gamification.userLevel.value.level === 4 ? '💡' : '👑' }}
+                </div>
+                <div>
+                  <p class="text-xs text-gray-500 uppercase tracking-widest font-bold">{{ gamification.userLevel.value.name }}</p>
+                  <p class="text-2xl font-black text-white">{{ gamification.totalPoints.value.toLocaleString('pt-BR') }} pts</p>
+                </div>
+              </div>
+              <div v-if="userRank" class="text-right">
+                <p class="text-xs text-gray-500 uppercase tracking-widest">Ranking do Grupo</p>
+                <p class="text-xl font-bold text-purple-300">#{{ userRank }}</p>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-xs text-gray-500 mb-1">
+                <span>Progresso para {{ gamification.userLevel.value.nextLevelPoints ? 'próximo nível' : 'nível máximo' }}</span>
+                <span>{{ gamification.userLevel.value.progress }}%</span>
+              </div>
+              <div class="w-full h-2 bg-white/5 rounded-full overflow-hidden">
+                <div
+                  class="h-full bg-gradient-to-r from-purple-500 to-blue-500 rounded-full"
+                  :style="{ width: `${gamification.userLevel.value.progress}%` }"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Badge Grid -->
+          <div v-if="gamification.allBadgesData.value.length" class="mb-8">
+            <h3 class="text-sm font-bold uppercase tracking-widest text-gray-500 mb-4">Conquistas</h3>
+            <BadgeGrid
+              :all-badges="gamification.allBadgesData.value"
+              :earned-slugs="gamification.earnedBadgeSlugs.value"
+            />
           </div>
 
           <!-- Form Section -->
