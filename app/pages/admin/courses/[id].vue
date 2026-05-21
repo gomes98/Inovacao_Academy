@@ -504,6 +504,11 @@ async function deleteCourse() {
                 </select>
               </div>
 
+              <div class="md:col-span-2">
+                <label class="block text-xs text-gray-400 mb-1">Descrição / Instruções (HTML)</label>
+                <RichTextEditor v-model="contentForm.body_text" />
+              </div>
+
               <div v-if="contentForm.content_type === 'video'" class="md:col-span-2 space-y-4">
                 <div>
                   <label class="block text-xs text-gray-400 mb-1">URL do Vídeo (YouTube, Vimeo, etc)</label>
@@ -529,10 +534,6 @@ async function deleteCourse() {
               </div>
 
               <div v-if="contentForm.content_type === 'document'" class="md:col-span-2 space-y-4">
-                <div>
-                  <label class="block text-xs text-gray-400 mb-1">Texto (Opcional)</label>
-                  <textarea v-model="contentForm.body_text" rows="3" class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-white outline-none focus:border-purple-500/50"></textarea>
-                </div>
                 <div>
                   <label class="block text-xs text-gray-400 mb-1">Upload de Arquivo Principal (Opcional se já existe)</label>
                   <input type="file" @change="handleFileUpload" class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-500/10 file:text-purple-400 hover:file:bg-purple-500/20">
