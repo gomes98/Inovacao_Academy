@@ -358,9 +358,11 @@ async function saveNote() {
                 </button>
               </div>
               
-              <div v-if="content?.body_text" class="prose prose-invert max-w-none text-gray-400 leading-relaxed text-lg mb-8">
-                {{ content.body_text }}
-              </div>
+              <div
+                v-if="content?.body_text"
+                class="prose prose-invert prose-headings:text-white prose-a:text-purple-400 prose-strong:text-white prose-code:text-purple-300 prose-blockquote:border-purple-500 max-w-none text-gray-400 leading-relaxed text-lg mb-8"
+                v-html="content.body_text"
+              ></div>
 
               <!-- Attachments Section -->
               <div v-if="content?.attachments?.length" class="mt-8 pt-8 border-t border-white/10">
