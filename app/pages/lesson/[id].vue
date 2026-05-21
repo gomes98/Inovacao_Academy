@@ -21,7 +21,7 @@ watch(content, (c) => {
 
 // 2. Busca os comentários (via view para pegar nomes)
 const { data: comments, refresh: refreshComments } = await useAsyncData(() => `comments-${contentId.value}`, async () => {
-  const { data } = await supabase.from('content_comments_view').select('*').eq('content_id', contentId.value).order('created_at', { ascending: false })
+  const { data } = await supabase.from('content_comments_view').select('*').eq('content_id', contentId.value).order('created_at', { ascending: true })
   return data
 }, { watch: [contentId] })
 
@@ -135,34 +135,63 @@ watch(contentId, () => {
   noteText.value = ''
 })
 
+type CommentNode = {
+  comment_id: string
+  parent_id: string | null
+  comment_text: string | null
+  user_name: string | null
+  created_at: string | null
+  children: CommentNode[]
+}
+
 // Estados para interação
 const newComment = ref('')
 const isPostingComment = ref(false)
 const noteText = ref('')
 const isSavingNote = ref(false)
+const replyingTo = ref<string | null>(null)
+const replyText = ref('')
+
+// Monta árvore de comentários a partir da lista flat
+const commentsTree = computed(() => {
+  const flat = (comments.value ?? []) as CommentNode[]
+  const map = new Map(flat.map(c => [c.comment_id!, { ...c, children: [] as CommentNode[] }]))
+  const roots: CommentNode[] = []
+  for (const node of map.values()) {
+    if (node.parent_id) map.get(node.parent_id)?.children.push(node)
+    else roots.push(node)
+  }
+  return roots
+})
 
 // Sincroniza nota inicial
 watch(privateNote, (val) => {
   if (val) noteText.value = val.note_text
 }, { immediate: true })
 
-async function postComment() {
-  if (!newComment.value.trim() || isPostingComment.value || !user.value) return
-  
+async function postComment(parentId: string | null = null) {
+  const text = parentId ? replyText.value : newComment.value
+  if (!text.trim() || isPostingComment.value || !user.value) return
+
   isPostingComment.value = true
-  console.log('Postando comentário para:', contentId.value)
   try {
     const { error } = await supabase.from('comments').insert({
       content_id: contentId.value,
-      comment_text: newComment.value
+      comment_text: text,
+      ...(parentId ? { parent_id: parentId } : {})
     })
-    
+
     if (error) {
       console.error('Erro Supabase (Comentário):', error)
       throw error
     }
-    
-    newComment.value = ''
+
+    if (parentId) {
+      replyText.value = ''
+    } else {
+      newComment.value = ''
+    }
+    replyingTo.value = null
     await refreshComments()
   } catch (err) {
     alert('Erro ao postar comentário. Verifique o console.')
@@ -171,6 +200,10 @@ async function postComment() {
     isPostingComment.value = false
   }
 }
+
+provide('replyingTo', replyingTo)
+provide('replyText', replyText)
+provide('postComment', postComment)
 
 async function saveNote() {
   if (isSavingNote.value || !user.value) return
@@ -401,18 +434,12 @@ async function saveNote() {
               </h2>
 
               <div class="space-y-6 mb-6">
-                <div v-for="com in comments" :key="com.comment_id" class="flex gap-4">
-                  <div class="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500/20 to-blue-500/20 border border-white/10 flex items-center justify-center font-bold text-xs">
-                    {{ com.user_name?.charAt(0) || 'U' }}
-                  </div>
-                  <div class="flex-1">
-                    <div class="flex items-center gap-2 mb-1">
-                      <span class="text-sm font-bold">{{ com.user_name }}</span>
-                      <span class="text-[10px] text-gray-600 uppercase tracking-widest">{{ new Date(com.created_at).toLocaleDateString() }}</span>
-                    </div>
-                    <p class="text-sm text-gray-400 leading-relaxed">{{ com.comment_text }}</p>
-                  </div>
-                </div>
+                <CommentItem
+                  v-for="com in commentsTree"
+                  :key="com.comment_id"
+                  :comment="com"
+                  :depth="0"
+                />
               </div>
 
               <div class="mb-10 p-6 rounded-3xl bg-white/[0.02] border border-white/5">
