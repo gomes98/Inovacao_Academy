@@ -11,9 +11,9 @@ const emit = defineEmits(['close'])
 const visible = ref(false)
 
 watch(
-  () => props.points || props.badge,
-  (val) => {
-    if (val) {
+  [() => props.points, () => props.badge],
+  ([newPoints, newBadge]) => {
+    if (newPoints || newBadge) {
       visible.value = true
       setTimeout(() => {
         visible.value = false
