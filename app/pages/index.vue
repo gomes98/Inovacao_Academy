@@ -3,7 +3,7 @@ const supabase = useSupabaseClient()
 const user = useSupabaseUser()
 
 // Busca o perfil do usuário logado
-const { data: profile } = await useAsyncData('user-profile', async () => {  
+const { data: profile } = await useAsyncData('user-profile', async () => {
   if (!user.value?.id) return null
   const { data } = await supabase.from('perfis').select('role, name').eq('id', user.value.id).single()
   return data
@@ -25,6 +25,22 @@ async function handleLogout() {
   await supabase.auth.signOut()
   navigateTo('/login')
 }
+
+// Gamification
+const gamification = useGamification()
+
+watch(user, async (u) => {
+  if (u?.id) {
+    await gamification.loadUserData()
+    await gamification.loadGroupRanking()
+  }
+}, { immediate: true })
+
+const nextBadge = computed(() => {
+  return gamification.allBadgesData.value.find(
+    b => !gamification.earnedBadgeSlugs.value.has(b.slug)
+  ) ?? null
+})
 </script>
 
 <template>
@@ -42,6 +58,15 @@ async function handleLogout() {
         </h1>
         <p class="text-gray-400 mt-2">Continue sua jornada de aprendizado na Inovação Academy.</p>
       </div>
+
+      <GamificationWidget
+        v-if="user && gamification.groupId.value"
+        :total-points="gamification.totalPoints.value"
+        :user-level="gamification.userLevel.value"
+        :group-ranking="gamification.groupRankingData.value"
+        :current-user-id="user.id"
+        :next-badge="nextBadge"
+      />
 
       <!-- Courses Grid -->
       <section>
