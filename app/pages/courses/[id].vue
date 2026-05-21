@@ -46,7 +46,9 @@ const { data: structure, pending, error } = await useAsyncData(`course-structure
     }
   })
 
-  return Array.from(modulesMap.values()).sort((a, b) => a.order - b.order)
+  const modules = Array.from(modulesMap.values()).sort((a, b) => a.order - b.order)
+  modules.forEach(m => m.contents.sort((a: { order: number }, b: { order: number }) => a.order - b.order))
+  return modules
 })
 
 const courseTitle = computed(() => structure.value?.[0]?.title || 'Curso')
