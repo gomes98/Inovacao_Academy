@@ -69,10 +69,10 @@ function formatDuration(seconds: number): string {
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#050505] text-white font-sans selection:bg-purple-500/30">
+  <div class="min-h-screen bg-[#050505] text-white font-sans selection:bg-[#FAA407]/30">
     <!-- Background Glows -->
     <div class="fixed inset-0 overflow-hidden pointer-events-none">
-      <div class="absolute -top-[10%] -right-[10%] w-[40%] h-[40%] bg-blue-600/10 blur-[120px] rounded-full"></div>
+      <div class="absolute -top-[10%] -right-[10%] w-[40%] h-[40%] bg-[#006E46]/10 blur-[120px] rounded-full"></div>
     </div>
 
     <main class="relative z-10 max-w-4xl mx-auto p-8 pt-12">
@@ -86,7 +86,7 @@ function formatDuration(seconds: number): string {
           </div>
           
           <div class="flex flex-col items-end gap-2">
-             <div class="text-2xl font-black text-purple-400">{{ stats.percent }}%</div>
+             <div class="text-2xl font-black text-[#FAA407]">{{ stats.percent }}%</div>
              <div class="text-[10px] text-gray-600 uppercase tracking-tighter">{{ stats.completed }} de {{ stats.total }} aulas concluídas</div>
           </div>
         </div>
@@ -94,7 +94,7 @@ function formatDuration(seconds: number): string {
         <!-- Progress Bar -->
         <div class="w-full h-2 bg-white/5 rounded-full overflow-hidden border border-white/5">
           <div 
-            class="h-full bg-gradient-to-r from-purple-600 to-blue-500 transition-all duration-1000 ease-out shadow-[0_0_20px_rgba(139,92,246,0.3)]"
+            class="h-full bg-gradient-to-r from-[#006E46] to-[#FAA407] transition-all duration-1000 ease-out shadow-[0_0_20px_rgba(0,110,70,0.3)]"
             :style="{ width: `${stats.percent}%` }"
           ></div>
         </div>
@@ -112,7 +112,7 @@ function formatDuration(seconds: number): string {
         <div v-for="mod in structure" :key="mod.id" class="glass-card rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl overflow-hidden">
           <div class="p-6 border-b border-white/5 bg-white/[0.02] flex justify-between items-center">
             <h2 class="text-lg font-semibold flex items-center gap-3">
-              <span class="w-2 h-2 rounded-full transition-colors" :class="[mod.contents.every(c => c.is_completed) ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-purple-500']"></span>
+              <span class="w-2 h-2 rounded-full transition-colors" :class="[mod.contents.every(c => c.is_completed) ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-[#FAA407]']"></span>
               {{ mod.title }}
               <svg v-if="mod.contents.every(c => c.is_completed)" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-500"><polyline points="20 6 9 17 4 12"/></svg>
             </h2>
@@ -126,7 +126,7 @@ function formatDuration(seconds: number): string {
               :to="`/lesson/${content.id}`"
               class="flex items-center gap-4 p-4 hover:bg-white/[0.03] transition-all group"
             >
-              <div class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-gray-500 group-hover:text-purple-400 group-hover:bg-purple-500/10 transition-all border border-white/5 relative overflow-hidden flex-shrink-0">
+              <div class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-gray-500 group-hover:text-[#FAA407] group-hover:bg-[#FAA407]/10 transition-all border border-white/5 relative overflow-hidden flex-shrink-0">
                 <template v-if="content.type === 'video' && content.video_url">
                   <img
                     :src="content.video_url.replace(/\.[^.]+$/, '.jpg')"
@@ -153,7 +153,7 @@ function formatDuration(seconds: number): string {
                   <span v-if="content.type === 'video' && formatDuration(content.duration)" class="text-gray-500">{{ formatDuration(content.duration) }}</span>
                 </p>
               </div>
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-700 group-hover:text-purple-400 group-hover:translate-x-1 transition-all"><path d="m9 18 6-6-6-6"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-700 group-hover:text-[#FAA407] group-hover:translate-x-1 transition-all"><path d="m9 18 6-6-6-6"/></svg>
             </NuxtLink>
           </div>
         </div>

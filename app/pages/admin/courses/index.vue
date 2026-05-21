@@ -194,11 +194,11 @@ async function deleteCourse(course: any) {
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#050505] text-white font-sans selection:bg-purple-500/30">
+  <div class="min-h-screen bg-[#050505] text-white font-sans selection:bg-[#FAA407]/30">
     <!-- Background Glows -->
     <div class="fixed inset-0 overflow-hidden pointer-events-none">
-      <div class="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-purple-600/20 blur-[120px] rounded-full"></div>
-      <div class="absolute bottom-[10%] -right-[10%] w-[30%] h-[30%] bg-blue-600/10 blur-[100px] rounded-full"></div>
+      <div class="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-[#006E46]/20 blur-[120px] rounded-full"></div>
+      <div class="absolute bottom-[10%] -right-[10%] w-[30%] h-[30%] bg-[#FAA407]/10 blur-[100px] rounded-full"></div>
     </div>
 
     <main class="relative z-10 max-w-6xl mx-auto p-8 pt-12">
@@ -211,7 +211,7 @@ async function deleteCourse(course: any) {
         </div>
         <button 
           @click="isCreating = true"
-          class="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-medium transition-all shadow-[0_0_20px_-5px_rgba(168,85,247,0.4)] flex items-center gap-2"
+          class="px-5 py-2.5 rounded-xl bg-[#006E46] hover:bg-[#008266] text-white font-medium transition-all shadow-[0_0_20px_-5px_rgba(168,85,247,0.4)] flex items-center gap-2"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
           Novo Curso
@@ -219,12 +219,12 @@ async function deleteCourse(course: any) {
       </div>
 
       <!-- Create Course Form -->
-      <div v-if="isCreating" class="mb-12 p-6 glass-card rounded-3xl border border-purple-500/30 bg-purple-500/5 backdrop-blur-xl">
-        <h2 class="text-xl font-semibold mb-4 text-purple-100">Criar Novo Curso</h2>
+      <div v-if="isCreating" class="mb-12 p-6 glass-card rounded-3xl border border-[#FAA407]/30 bg-[#006E46]/5 backdrop-blur-xl">
+        <h2 class="text-xl font-semibold mb-4 text-white">Criar Novo Curso</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>
             <label class="block text-sm text-gray-400 mb-1">Título</label>
-            <input v-model="newCourse.title" type="text" class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-white outline-none focus:border-purple-500/50 transition-colors" placeholder="Ex: Introdução ao Vue 3">
+            <input v-model="newCourse.title" type="text" class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-white outline-none focus:border-[#FAA407]/50 transition-colors" placeholder="Ex: Introdução ao Vue 3">
           </div>
           <div>
             <label class="block text-sm text-gray-400 mb-2">Capa do Curso</label>
@@ -237,7 +237,7 @@ async function deleteCourse(course: any) {
                 :class="[
                   'px-4 py-1.5 rounded-lg text-sm font-medium transition-all',
                   coverMode === 'url'
-                    ? 'bg-purple-600 text-white shadow'
+                    ? 'bg-[#006E46] text-white shadow'
                     : 'text-gray-400 hover:text-white'
                 ]"
               >URL</button>
@@ -247,7 +247,7 @@ async function deleteCourse(course: any) {
                 :class="[
                   'px-4 py-1.5 rounded-lg text-sm font-medium transition-all',
                   coverMode === 'upload'
-                    ? 'bg-purple-600 text-white shadow'
+                    ? 'bg-[#006E46] text-white shadow'
                     : 'text-gray-400 hover:text-white'
                 ]"
               >Upload</button>
@@ -258,7 +258,7 @@ async function deleteCourse(course: any) {
               <input
                 v-model="newCourse.thumbnail_url"
                 type="text"
-                class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-white outline-none focus:border-purple-500/50 transition-colors"
+                class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-white outline-none focus:border-[#FAA407]/50 transition-colors"
                 placeholder="https://..."
               >
             </div>
@@ -267,7 +267,7 @@ async function deleteCourse(course: any) {
             <div v-else>
               <label
                 for="cover-upload"
-                class="flex flex-col items-center justify-center w-full h-28 rounded-xl border border-dashed border-white/20 bg-black/30 cursor-pointer hover:border-purple-500/50 hover:bg-purple-500/5 transition-all relative overflow-hidden"
+                class="flex flex-col items-center justify-center w-full h-28 rounded-xl border border-dashed border-white/20 bg-black/30 cursor-pointer hover:border-[#FAA407]/50 hover:bg-[#006E46]/5 transition-all relative overflow-hidden"
               >
                 <!-- Preview -->
                 <img
@@ -277,8 +277,8 @@ async function deleteCourse(course: any) {
                   alt="Preview"
                 >
                 <!-- Loading -->
-                <div v-if="uploadingCover" class="relative flex flex-col items-center gap-2 text-purple-400">
-                  <div class="w-6 h-6 border-2 border-purple-500/30 border-t-purple-400 animate-spin rounded-full"></div>
+                <div v-if="uploadingCover" class="relative flex flex-col items-center gap-2 text-[#FAA407]">
+                  <div class="w-6 h-6 border-2 border-[#FAA407]/30 border-t-[#FAA407] animate-spin rounded-full"></div>
                   <span class="text-xs font-medium">Enviando...</span>
                 </div>
                 <!-- Idle / após upload -->
@@ -302,12 +302,12 @@ async function deleteCourse(course: any) {
           </div>
           <div class="md:col-span-2">
             <label class="block text-sm text-gray-400 mb-1">Descrição</label>
-            <textarea v-model="newCourse.description" rows="3" class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-white outline-none focus:border-purple-500/50 transition-colors" placeholder="Breve descrição do curso..."></textarea>
+            <textarea v-model="newCourse.description" rows="3" class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-white outline-none focus:border-[#FAA407]/50 transition-colors" placeholder="Breve descrição do curso..."></textarea>
           </div>
         </div>
         <div class="flex justify-end gap-3">
           <button @click="cancelCreate" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white transition-all">Cancelar</button>
-          <button @click="createCourse" :disabled="uploadingCover" class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed">Salvar Curso</button>
+          <button @click="createCourse" :disabled="uploadingCover" class="px-4 py-2 rounded-xl bg-[#006E46] hover:bg-[#008266] text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed">Salvar Curso</button>
         </div>
       </div>
 
@@ -359,12 +359,12 @@ async function deleteCourse(course: any) {
           </div>
 
           <!-- Edit Form (inline) -->
-          <div v-if="editingCourse?.id === course.id" class="border-t border-white/10 p-6 bg-purple-500/5">
-            <h3 class="text-sm font-semibold text-purple-300 mb-4">Editar Curso</h3>
+          <div v-if="editingCourse?.id === course.id" class="border-t border-white/10 p-6 bg-[#006E46]/5">
+            <h3 class="text-sm font-semibold text-[#FAA407] mb-4">Editar Curso</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
                 <label class="block text-sm text-gray-400 mb-1">Título</label>
-                <input v-model="editingCourse.title" type="text" class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-white outline-none focus:border-purple-500/50 transition-colors">
+                <input v-model="editingCourse.title" type="text" class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-white outline-none focus:border-[#FAA407]/50 transition-colors">
               </div>
               <div>
                 <label class="block text-sm text-gray-400 mb-2">Capa do Curso</label>
@@ -376,7 +376,7 @@ async function deleteCourse(course: any) {
                     :class="[
                       'px-4 py-1.5 rounded-lg text-sm font-medium transition-all',
                       editCoverMode === 'url'
-                        ? 'bg-purple-600 text-white shadow'
+                        ? 'bg-[#006E46] text-white shadow'
                         : 'text-gray-400 hover:text-white'
                     ]"
                   >URL</button>
@@ -386,7 +386,7 @@ async function deleteCourse(course: any) {
                     :class="[
                       'px-4 py-1.5 rounded-lg text-sm font-medium transition-all',
                       editCoverMode === 'upload'
-                        ? 'bg-purple-600 text-white shadow'
+                        ? 'bg-[#006E46] text-white shadow'
                         : 'text-gray-400 hover:text-white'
                     ]"
                   >Upload</button>
@@ -396,7 +396,7 @@ async function deleteCourse(course: any) {
                   <input
                     v-model="editingCourse.thumbnail_url"
                     type="text"
-                    class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-white outline-none focus:border-purple-500/50 transition-colors"
+                    class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-white outline-none focus:border-[#FAA407]/50 transition-colors"
                     placeholder="https://..."
                   >
                 </div>
@@ -404,7 +404,7 @@ async function deleteCourse(course: any) {
                 <div v-else>
                   <label
                     :for="`edit-cover-upload-${course.id}`"
-                    class="flex flex-col items-center justify-center w-full h-28 rounded-xl border border-dashed border-white/20 bg-black/30 cursor-pointer hover:border-purple-500/50 hover:bg-purple-500/5 transition-all relative overflow-hidden"
+                    class="flex flex-col items-center justify-center w-full h-28 rounded-xl border border-dashed border-white/20 bg-black/30 cursor-pointer hover:border-[#FAA407]/50 hover:bg-[#006E46]/5 transition-all relative overflow-hidden"
                   >
                     <img
                       v-if="editingCourse.thumbnail_url && !uploadingEditCover"
@@ -412,8 +412,8 @@ async function deleteCourse(course: any) {
                       class="absolute inset-0 w-full h-full object-cover opacity-60"
                       alt="Preview"
                     >
-                    <div v-if="uploadingEditCover" class="relative flex flex-col items-center gap-2 text-purple-400">
-                      <div class="w-6 h-6 border-2 border-purple-500/30 border-t-purple-400 animate-spin rounded-full"></div>
+                    <div v-if="uploadingEditCover" class="relative flex flex-col items-center gap-2 text-[#FAA407]">
+                      <div class="w-6 h-6 border-2 border-[#FAA407]/30 border-t-[#FAA407] animate-spin rounded-full"></div>
                       <span class="text-xs font-medium">Enviando...</span>
                     </div>
                     <div v-else class="relative flex flex-col items-center gap-1 text-gray-400">
@@ -436,12 +436,12 @@ async function deleteCourse(course: any) {
               </div>
               <div class="md:col-span-2">
                 <label class="block text-sm text-gray-400 mb-1">Descrição</label>
-                <textarea v-model="editingCourse.description" rows="3" class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-white outline-none focus:border-purple-500/50 transition-colors" placeholder="Breve descrição do curso..."></textarea>
+                <textarea v-model="editingCourse.description" rows="3" class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-white outline-none focus:border-[#FAA407]/50 transition-colors" placeholder="Breve descrição do curso..."></textarea>
               </div>
             </div>
             <div class="flex justify-end gap-3">
               <button @click="cancelEdit" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white transition-all">Cancelar</button>
-              <button @click="updateCourse" :disabled="uploadingEditCover" class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed">Salvar Alterações</button>
+              <button @click="updateCourse" :disabled="uploadingEditCover" class="px-4 py-2 rounded-xl bg-[#006E46] hover:bg-[#008266] text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed">Salvar Alterações</button>
             </div>
           </div>
         </div>

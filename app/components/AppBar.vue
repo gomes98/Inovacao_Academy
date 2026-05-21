@@ -161,7 +161,7 @@ onMounted(() => {
 .brand-text {
   font-size: 1.25rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #fff 0%, #a855f7 100%);
+  background: linear-gradient(135deg, #fff 0%, #FAA407 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   letter-spacing: -0.02em;

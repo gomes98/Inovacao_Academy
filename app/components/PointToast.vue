@@ -32,7 +32,7 @@ watch(
     >
       <div
         v-if="points && label"
-        class="flex items-center gap-3 px-5 py-3 rounded-2xl bg-purple-600/90 backdrop-blur-md border border-purple-400/30 shadow-2xl text-white"
+        class="flex items-center gap-3 px-5 py-3 rounded-2xl bg-[#006E46]/90 backdrop-blur-md border border-[#FAA407]/30 shadow-2xl text-white"
       >
         <span class="text-xl font-black text-yellow-300">+{{ points }}</span>
         <span class="text-sm font-medium">{{ label }}</span>

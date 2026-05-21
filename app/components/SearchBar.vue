@@ -123,7 +123,7 @@ const showDropdown = computed(() => query.value.length >= 2)
   align-items: center;
   gap: 8px;
   background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(168,85,247,0.4);
+  border: 1px solid rgba(0,110,70,0.5);
   border-radius: 99px;
   padding: 6px 12px;
   width: 280px;
@@ -245,7 +245,7 @@ const showDropdown = computed(() => query.value.length >= 2)
   line-height: 1.4;
 }
 .result-time {
-  color: #a855f7;
+  color: #FAA407;
   font-weight: 600;
   margin-left: 6px;
 }

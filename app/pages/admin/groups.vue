@@ -144,10 +144,10 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#050505] text-white font-sans selection:bg-purple-500/30">
+  <div class="min-h-screen bg-[#050505] text-white font-sans selection:bg-[#FAA407]/30">
     <div class="fixed inset-0 overflow-hidden pointer-events-none">
-      <div class="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-purple-600/20 blur-[120px] rounded-full"></div>
-      <div class="absolute bottom-[10%] -right-[10%] w-[30%] h-[30%] bg-blue-600/10 blur-[100px] rounded-full"></div>
+      <div class="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-[#006E46]/20 blur-[120px] rounded-full"></div>
+      <div class="absolute bottom-[10%] -right-[10%] w-[30%] h-[30%] bg-[#FAA407]/10 blur-[100px] rounded-full"></div>
     </div>
 
     <main class="relative z-10 max-w-7xl mx-auto p-8 pt-12">
@@ -161,7 +161,7 @@ onMounted(() => {
         </div>
         <button
           @click="isCreateModalOpen = true"
-          class="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-medium transition-all shadow-[0_0_20px_-5px_rgba(168,85,247,0.4)] flex items-center gap-2"
+          class="px-5 py-2.5 rounded-xl bg-[#006E46] hover:bg-[#008266] text-white font-medium transition-all shadow-[0_0_20px_-5px_rgba(168,85,247,0.4)] flex items-center gap-2"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           Novo Grupo
@@ -183,7 +183,7 @@ onMounted(() => {
             @click="selectGroup(g)"
             class="p-4 rounded-2xl border cursor-pointer transition-all"
             :class="selectedGroup?.id === g.id
-              ? 'border-purple-500/50 bg-purple-500/10'
+              ? 'border-[#FAA407]/50 bg-[#006E46]/10'
               : 'border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/[0.08]'"
           >
             <div class="flex items-start justify-between gap-2">
@@ -217,7 +217,7 @@ onMounted(() => {
               :key="tab.key"
               @click="activeTab = tab.key as 'courses' | 'members'"
               class="px-4 py-1.5 rounded-lg text-sm font-medium transition-all"
-              :class="activeTab === tab.key ? 'bg-purple-600 text-white' : 'text-gray-400 hover:text-white'"
+              :class="activeTab === tab.key ? 'bg-[#006E46] text-white' : 'text-gray-400 hover:text-white'"
             >
               {{ tab.label }}
             </button>
@@ -236,7 +236,7 @@ onMounted(() => {
                   type="checkbox"
                   :checked="groupCourseIds.has(course.id)"
                   @change="toggleCourse(course.id)"
-                  class="w-4 h-4 accent-purple-500"
+                  class="w-4 h-4 accent-[#FAA407]"
                 />
                 <span class="text-sm text-gray-200">{{ course.title }}</span>
               </label>
@@ -244,7 +244,7 @@ onMounted(() => {
             <button
               @click="saveCourses"
               :disabled="savingCourses"
-              class="px-6 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-medium text-sm transition-all disabled:opacity-50"
+              class="px-6 py-2.5 rounded-xl bg-[#006E46] hover:bg-[#008266] text-white font-medium text-sm transition-all disabled:opacity-50"
             >
               {{ savingCourses ? 'Salvando...' : 'Salvar Cursos' }}
             </button>
@@ -263,7 +263,7 @@ onMounted(() => {
                   type="checkbox"
                   :checked="groupMemberIds.has(u.id)"
                   @change="toggleMember(u.id)"
-                  class="w-4 h-4 accent-purple-500"
+                  class="w-4 h-4 accent-[#FAA407]"
                 />
                 <div>
                   <p class="text-sm text-gray-200">{{ u.name }}</p>
@@ -274,7 +274,7 @@ onMounted(() => {
             <button
               @click="saveMembers"
               :disabled="savingMembers"
-              class="px-6 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-medium text-sm transition-all disabled:opacity-50"
+              class="px-6 py-2.5 rounded-xl bg-[#006E46] hover:bg-[#008266] text-white font-medium text-sm transition-all disabled:opacity-50"
             >
               {{ savingMembers ? 'Salvando...' : 'Salvar Membros' }}
             </button>
@@ -300,7 +300,7 @@ onMounted(() => {
               v-model="newGroup.name"
               type="text"
               required
-              class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-purple-500/50 transition-all"
+              class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-[#FAA407]/50 transition-all"
               placeholder="Ex: Time de Vendas"
             />
           </div>
@@ -309,13 +309,13 @@ onMounted(() => {
             <input
               v-model="newGroup.description"
               type="text"
-              class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-purple-500/50 transition-all"
+              class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-[#FAA407]/50 transition-all"
               placeholder="Ex: Acesso aos cursos de vendas"
             />
           </div>
           <div class="flex gap-3 pt-2">
             <button type="button" @click="isCreateModalOpen = false" class="flex-1 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-white font-bold text-xs tracking-widest uppercase transition-all">Cancelar</button>
-            <button type="submit" :disabled="creatingGroup" class="flex-1 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-bold text-xs tracking-widest uppercase transition-all disabled:opacity-50">
+            <button type="submit" :disabled="creatingGroup" class="flex-1 py-3 rounded-xl bg-gradient-to-r from-[#006E46] to-[#008266] hover:from-[#008266] hover:to-[#FAA407] text-white font-bold text-xs tracking-widest uppercase transition-all disabled:opacity-50">
               {{ creatingGroup ? 'Criando...' : 'Criar Grupo' }}
             </button>
           </div>

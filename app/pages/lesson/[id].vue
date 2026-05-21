@@ -256,15 +256,15 @@ async function saveNote() {
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#050505] text-white font-sans selection:bg-purple-500/30 pb-20">
+  <div class="min-h-screen bg-[#050505] text-white font-sans selection:bg-[#FAA407]/30 pb-20">
     <div class="fixed inset-0 overflow-hidden pointer-events-none">
-      <div class="absolute -bottom-[10%] -left-[10%] w-[40%] h-[40%] bg-purple-600/10 blur-[120px] rounded-full"></div>
+      <div class="absolute -bottom-[10%] -left-[10%] w-[40%] h-[40%] bg-[#006E46]/10 blur-[120px] rounded-full"></div>
     </div>
 
     <main class="relative z-10 max-w-7xl mx-auto p-6 lg:p-10">
       <!-- Breadcrumbs -->
       <nav class="flex items-center gap-2 text-xs text-gray-500 mb-8 uppercase tracking-widest font-medium">
-        <NuxtLink :to="`/courses/${content?.modules?.courses?.id}`" class="hover:text-purple-400 transition-colors">
+        <NuxtLink :to="`/courses/${content?.modules?.courses?.id}`" class="hover:text-[#FAA407] transition-colors">
           {{ content?.modules?.courses?.title }}
         </NuxtLink>
         <span>/</span>
@@ -297,7 +297,7 @@ async function saveNote() {
               <div class="flex-1 rounded-[32px] bg-white/[0.03] border border-white/10 overflow-hidden flex flex-col">
                 <div class="p-5 border-b border-white/10 bg-white/[0.02]">
                   <h3 class="text-sm font-bold flex items-center gap-2 uppercase tracking-widest text-gray-400">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-purple-400"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M15 3v18"/><path d="M8 8h2"/><path d="M8 12h2"/><path d="M8 16h2"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[#FAA407]"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M15 3v18"/><path d="M8 8h2"/><path d="M8 12h2"/><path d="M8 16h2"/></svg>
                     Conteúdo
                   </h3>
                 </div>
@@ -308,10 +308,10 @@ async function saveNote() {
                       :key="item.id"
                       :to="`/lesson/${item.id}`"
                       class="group flex items-center gap-3 p-3 rounded-2xl transition-all hover:bg-white/5"
-                      :class="[item.id === contentId ? 'bg-purple-600/20 border border-purple-500/30' : 'border border-transparent']"
+                      :class="[item.id === contentId ? 'bg-[#006E46]/20 border border-[#FAA407]/30' : 'border border-transparent']"
                     >
                       <div class="w-8 h-8 flex-shrink-0 rounded-lg flex items-center justify-center text-[10px] font-bold border transition-colors overflow-hidden relative"
-                        :class="[item.id === contentId ? 'bg-purple-600 border-purple-400 text-white' : 'bg-white/5 border-white/10 text-gray-500 group-hover:border-white/20 group-hover:text-gray-300']"
+                        :class="[item.id === contentId ? 'bg-[#006E46] border-[#FAA407] text-white' : 'bg-white/5 border-white/10 text-gray-500 group-hover:border-white/20 group-hover:text-gray-300']"
                       >
                         <template v-if="item.video_url">
                           <img
@@ -336,8 +336,8 @@ async function saveNote() {
                           <svg v-if="userProgress?.includes(item.id)" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-400"><polyline points="20 6 9 17 4 12"/></svg>
                         </div>
                         <div class="flex items-center gap-1.5 mt-0.5">
-                          <svg v-if="item.video_url" xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-purple-400"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                          <svg v-else xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-400"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+                          <svg v-if="item.video_url" xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[#FAA407]"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                          <svg v-else xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[#008266]"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
                           <span class="text-[9px] uppercase tracking-tighter text-gray-600">{{ item.video_url ? 'Vídeo' : 'Aula' }}</span>
                         </div>
                       </div>
@@ -373,14 +373,14 @@ async function saveNote() {
               
               <div
                 v-if="content?.body_text"
-                class="prose prose-invert prose-headings:text-white prose-a:text-purple-400 prose-strong:text-white prose-code:text-purple-300 prose-blockquote:border-purple-500 max-w-none text-gray-400 leading-relaxed text-lg mb-8"
+                class="prose prose-invert prose-headings:text-white prose-a:text-[#FAA407] prose-strong:text-white prose-code:text-[#008266] prose-blockquote:border-[#006E46] max-w-none text-gray-400 leading-relaxed text-lg mb-8"
                 v-html="content.body_text"
               ></div>
 
               <!-- Attachments Section -->
               <div v-if="content?.attachments?.length" class="mt-8 pt-8 border-t border-white/10">
                 <h3 class="text-sm font-bold uppercase tracking-widest text-gray-500 mb-4 flex items-center gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-400"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.51a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[#FAA407]"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.51a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
                   Materiais de Apoio ({{ content.attachments.length }})
                 </h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -390,16 +390,16 @@ async function saveNote() {
                     :href="file.file_url"
                     target="_blank"
                     download
-                    class="group flex items-center gap-4 p-4 rounded-2xl bg-white/[0.03] border border-white/5 hover:border-blue-500/30 hover:bg-white/5 transition-all"
+                    class="group flex items-center gap-4 p-4 rounded-2xl bg-white/[0.03] border border-white/5 hover:border-[#FAA407]/30 hover:bg-white/5 transition-all"
                   >
-                    <div class="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400 border border-blue-500/20 group-hover:scale-110 transition-transform">
+                    <div class="w-10 h-10 rounded-xl bg-[#006E46]/10 flex items-center justify-center text-[#FAA407] border border-[#006E46]/20 group-hover:scale-110 transition-transform">
                       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                     </div>
                     <div class="flex-1 min-w-0">
                       <p class="text-sm font-medium text-gray-200 truncate">{{ file.name }}</p>
                       <p class="text-[10px] text-gray-500 uppercase tracking-tighter">{{ (file.file_size / 1024 / 1024).toFixed(2) }} MB</p>
                     </div>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-700 group-hover:text-blue-400 transition-colors"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-700 group-hover:text-[#FAA407] transition-colors"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                   </a>
                 </div>
               </div>
@@ -416,7 +416,7 @@ async function saveNote() {
                 
                 <textarea 
                   v-model="noteText"
-                  class="w-full bg-white/[0.03] border border-white/5 rounded-2xl p-4 text-sm text-gray-200 placeholder-gray-700 min-h-[200px] focus:border-purple-500/30 transition-all outline-none"
+                  class="w-full bg-white/[0.03] border border-white/5 rounded-2xl p-4 text-sm text-gray-200 placeholder-gray-700 min-h-[200px] focus:border-[#FAA407]/30 transition-all outline-none"
                   placeholder="Digite aqui seus insights sobre esta aula..."
                 ></textarea>
                 
@@ -444,7 +444,7 @@ async function saveNote() {
             <!-- Comments Section -->
             <div class="pt-10 border-t border-white/10">
               <h2 class="text-xl font-bold mb-8 flex items-center gap-3">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-purple-400"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[#FAA407]"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                 Comentários ({{ comments?.length || 0 }})
               </h2>
 
@@ -467,7 +467,7 @@ async function saveNote() {
                   <button 
                     @click="postComment()"
                     :disabled="isPostingComment || !newComment.trim()"
-                    class="px-6 py-2 rounded-xl bg-purple-600 text-white text-xs font-bold hover:bg-purple-500 disabled:opacity-50 transition-all"
+                    class="px-6 py-2 rounded-xl bg-[#006E46] text-white text-xs font-bold hover:bg-[#008266] disabled:opacity-50 transition-all"
                   >
                     {{ isPostingComment ? 'Postando...' : 'Comentar' }}
                   </button>

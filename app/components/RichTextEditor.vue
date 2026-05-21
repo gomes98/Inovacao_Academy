@@ -37,7 +37,7 @@ function setLink() {
 </script>
 
 <template>
-  <div class="w-full bg-black/50 border border-white/10 rounded-xl overflow-hidden focus-within:border-purple-500/50 transition-colors">
+  <div class="w-full bg-black/50 border border-white/10 rounded-xl overflow-hidden focus-within:border-[#FAA407]/50 transition-colors">
     <!-- Toolbar -->
     <div class="flex flex-wrap items-center gap-1 px-3 py-2 border-b border-white/10 bg-white/[0.02]">
       <button
@@ -51,7 +51,7 @@ function setLink() {
         type="button"
         @click="action"
         class="px-2 py-1 rounded text-xs font-mono transition-colors"
-        :class="isActive ? 'bg-purple-600 text-white' : 'text-gray-400 hover:bg-white/10 hover:text-white'"
+        :class="isActive ? 'bg-[#006E46] text-white' : 'text-gray-400 hover:bg-white/10 hover:text-white'"
       >{{ label }}</button>
 
       <div class="w-px h-4 bg-white/10 mx-1"></div>
@@ -65,7 +65,7 @@ function setLink() {
         type="button"
         @click="action"
         class="px-2 py-1 rounded text-xs font-mono transition-colors"
-        :class="isActive ? 'bg-purple-600 text-white' : 'text-gray-400 hover:bg-white/10 hover:text-white'"
+        :class="isActive ? 'bg-[#006E46] text-white' : 'text-gray-400 hover:bg-white/10 hover:text-white'"
       >{{ label }}</button>
 
       <div class="w-px h-4 bg-white/10 mx-1"></div>
@@ -80,7 +80,7 @@ function setLink() {
         type="button"
         @click="action"
         class="px-2 py-1 rounded text-xs font-mono transition-colors"
-        :class="isActive ? 'bg-purple-600 text-white' : 'text-gray-400 hover:bg-white/10 hover:text-white'"
+        :class="isActive ? 'bg-[#006E46] text-white' : 'text-gray-400 hover:bg-white/10 hover:text-white'"
       >{{ label }}</button>
 
       <div class="w-px h-4 bg-white/10 mx-1"></div>
@@ -89,7 +89,7 @@ function setLink() {
         type="button"
         @click="setLink"
         class="px-2 py-1 rounded text-xs font-mono transition-colors"
-        :class="editor?.isActive('link') ? 'bg-purple-600 text-white' : 'text-gray-400 hover:bg-white/10 hover:text-white'"
+        :class="editor?.isActive('link') ? 'bg-[#006E46] text-white' : 'text-gray-400 hover:bg-white/10 hover:text-white'"
       >🔗</button>
 
       <button

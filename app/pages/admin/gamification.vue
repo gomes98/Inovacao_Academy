@@ -79,7 +79,7 @@ const EVENT_LABELS: Record<string, string> = {
               type="number"
               :value="rule.points"
               min="0"
-              class="w-20 bg-white/5 border border-white/10 rounded-xl px-3 py-1 text-center text-white text-sm focus:border-purple-500/50 outline-none"
+              class="w-20 bg-white/5 border border-white/10 rounded-xl px-3 py-1 text-center text-white text-sm focus:border-[#FAA407]/50 outline-none"
               @change="updateRule(rule.id, Number(($event.target as HTMLInputElement).value))"
             />
             <span class="text-xs text-gray-500">pts</span>
@@ -105,7 +105,7 @@ const EVENT_LABELS: Record<string, string> = {
             <tr v-for="entry in ranking" :key="`${entry.group_id}-${entry.user_id}`" class="border-t border-white/5 hover:bg-white/[0.02]">
               <td class="p-3 text-gray-400">#{{ entry.rank_position }}</td>
               <td class="p-3 text-gray-200">{{ entry.user_name }}</td>
-              <td class="p-3 text-right font-bold text-purple-300">{{ entry.total_points }}</td>
+              <td class="p-3 text-right font-bold text-[#FAA407]">{{ entry.total_points }}</td>
               <td class="p-3 text-gray-500 text-xs">{{ entry.group_id }}</td>
             </tr>
           </tbody>
@@ -126,14 +126,14 @@ const EVENT_LABELS: Record<string, string> = {
             v-model="manualUserId"
             type="text"
             placeholder="uuid do usuário"
-            class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm text-white focus:border-purple-500/50 outline-none"
+            class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm text-white focus:border-[#FAA407]/50 outline-none"
           />
         </div>
         <div class="flex-1">
           <label class="block text-xs text-gray-500 uppercase tracking-widest mb-2">Badge</label>
           <select
             v-model="manualBadgeId"
-            class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm text-white focus:border-purple-500/50 outline-none"
+            class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm text-white focus:border-[#FAA407]/50 outline-none"
           >
             <option value="" disabled>Selecionar badge...</option>
             <option v-for="b in badges" :key="b.id" :value="b.id">{{ b.name }} ({{ b.slug }})</option>
@@ -142,7 +142,7 @@ const EVENT_LABELS: Record<string, string> = {
         <button
           @click="grantBadgeManually"
           :disabled="manualGranting || !manualUserId || !manualBadgeId"
-          class="px-6 py-2 rounded-xl bg-purple-600 text-white text-xs font-bold hover:bg-purple-500 disabled:opacity-40 transition-all"
+          class="px-6 py-2 rounded-xl bg-[#006E46] text-white text-xs font-bold hover:bg-[#008266] disabled:opacity-40 transition-all"
         >
           Conceder
         </button>

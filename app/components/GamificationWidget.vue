@@ -47,7 +47,7 @@ const LEVEL_ICONS: Record<number, string> = { 1: '🌱', 2: '🔭', 3: '⚙️',
       @click="expanded = !expanded"
     >
       <div class="flex items-center gap-4">
-        <div class="w-10 h-10 rounded-xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-xl">
+        <div class="w-10 h-10 rounded-xl bg-[#006E46]/20 border border-[#FAA407]/30 flex items-center justify-center text-xl">
           {{ LEVEL_ICONS[userLevel.level] ?? '👑' }}
         </div>
         <div class="text-left">
@@ -58,7 +58,7 @@ const LEVEL_ICONS: Record<number, string> = { 1: '🌱', 2: '🔭', 3: '⚙️',
       <div class="flex items-center gap-3">
         <div v-if="userRank" class="text-right">
           <p class="text-xs text-gray-500 uppercase tracking-widest">Ranking</p>
-          <p class="text-sm font-bold text-purple-300">#{{ userRank }} no grupo</p>
+          <p class="text-sm font-bold text-[#FAA407]">#{{ userRank }} no grupo</p>
         </div>
         <svg
           xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
@@ -85,7 +85,7 @@ const LEVEL_ICONS: Record<number, string> = { 1: '🌱', 2: '🔭', 3: '⚙️',
           </div>
           <div class="w-full h-2 bg-white/5 rounded-full overflow-hidden">
             <div
-              class="h-full bg-gradient-to-r from-purple-500 to-blue-500 rounded-full transition-all duration-1000"
+              class="h-full bg-gradient-to-r from-[#006E46] to-[#FAA407] rounded-full transition-all duration-1000"
               :style="{ width: `${userLevel.progress}%` }"
             />
           </div>
@@ -108,7 +108,7 @@ const LEVEL_ICONS: Record<number, string> = { 1: '🌱', 2: '🔭', 3: '⚙️',
               v-for="entry in groupRanking.slice(0, 5)"
               :key="entry.user_id"
               class="flex items-center gap-3 p-2 rounded-xl transition-colors"
-              :class="entry.user_id === currentUserId ? 'bg-purple-500/10 border border-purple-500/20' : ''"
+              :class="entry.user_id === currentUserId ? 'bg-[#006E46]/10 border border-[#FAA407]/20' : ''"
             >
               <span class="w-6 text-center text-sm">
                 {{ MEDAL[entry.rank_position] ?? `#${entry.rank_position}` }}
@@ -127,7 +127,7 @@ const LEVEL_ICONS: Record<number, string> = { 1: '🌱', 2: '🔭', 3: '⚙️',
               <span class="flex-1 text-sm" :class="entry.user_id === currentUserId ? 'text-white font-semibold' : 'text-gray-400'">
                 {{ entry.user_name }}
               </span>
-              <span class="text-xs font-bold text-purple-300">{{ entry.total_points.toLocaleString('pt-BR') }}</span>
+              <span class="text-xs font-bold text-[#FAA407]">{{ entry.total_points.toLocaleString('pt-BR') }}</span>
             </div>
           </div>
         </div>

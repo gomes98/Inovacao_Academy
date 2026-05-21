@@ -39,7 +39,7 @@ const childrenAlwaysVisible = computed(() => props.depth < 2)
 <template>
   <div class="flex gap-4">
     <!-- Avatar -->
-    <div class="w-8 h-8 flex-shrink-0 rounded-full bg-gradient-to-br from-purple-500/20 to-blue-500/20 border border-white/10 flex items-center justify-center font-bold text-xs">
+    <div class="w-8 h-8 flex-shrink-0 rounded-full bg-gradient-to-br from-[#006E46]/20 to-[#FAA407]/20 border border-white/10 flex items-center justify-center font-bold text-xs">
       {{ comment.user_name?.charAt(0) || 'U' }}
     </div>
 
@@ -55,7 +55,7 @@ const childrenAlwaysVisible = computed(() => props.depth < 2)
       <!-- Texto com @menção em roxo -->
       <p class="text-sm text-gray-400 leading-relaxed">
         <template v-for="(part, i) in comment.comment_text?.split(/(@\S+)/g)" :key="i">
-          <span v-if="part.startsWith('@')" class="text-purple-400">{{ part }}</span>
+          <span v-if="part.startsWith('@')" class="text-[#FAA407]">{{ part }}</span>
           <span v-else>{{ part }}</span>
         </template>
       </p>
@@ -63,7 +63,7 @@ const childrenAlwaysVisible = computed(() => props.depth < 2)
       <!-- Botão Responder -->
       <button
         @click="startReply"
-        class="mt-2 text-[11px] text-gray-500 hover:text-purple-400 transition-colors font-medium uppercase tracking-widest"
+        class="mt-2 text-[11px] text-gray-500 hover:text-[#FAA407] transition-colors font-medium uppercase tracking-widest"
       >
         Responder
       </button>
@@ -86,7 +86,7 @@ const childrenAlwaysVisible = computed(() => props.depth < 2)
           <button
             @click="postComment(comment.comment_id)"
             :disabled="!replyText.trim()"
-            class="px-5 py-2 rounded-xl bg-purple-600 text-white text-xs font-bold hover:bg-purple-500 disabled:opacity-50 transition-all uppercase tracking-widest"
+            class="px-5 py-2 rounded-xl bg-[#006E46] text-white text-xs font-bold hover:bg-[#008266] disabled:opacity-50 transition-all uppercase tracking-widest"
           >
             Responder
           </button>
@@ -108,7 +108,7 @@ const childrenAlwaysVisible = computed(() => props.depth < 2)
         <button
           v-if="!showChildren"
           @click="showChildren = true"
-          class="text-[11px] text-purple-400 hover:text-purple-300 transition-colors font-medium uppercase tracking-widest"
+          class="text-[11px] text-[#FAA407] hover:text-[#FAA407] transition-colors font-medium uppercase tracking-widest"
         >
           Ver {{ comment.children.length }} {{ comment.children.length === 1 ? 'resposta' : 'respostas' }}
         </button>

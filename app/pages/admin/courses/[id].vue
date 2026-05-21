@@ -404,14 +404,14 @@ async function deleteCourse() {
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#050505] text-white font-sans selection:bg-purple-500/30 pb-20">
+  <div class="min-h-screen bg-[#050505] text-white font-sans selection:bg-[#FAA407]/30 pb-20">
     <div class="fixed inset-0 overflow-hidden pointer-events-none">
-      <div class="absolute top-[20%] right-[10%] w-[30%] h-[30%] bg-purple-600/10 blur-[120px] rounded-full"></div>
+      <div class="absolute top-[20%] right-[10%] w-[30%] h-[30%] bg-[#006E46]/10 blur-[120px] rounded-full"></div>
     </div>
 
     <main class="relative z-10 max-w-5xl mx-auto p-8">
       <header class="mb-12">
-        <NuxtLink to="/admin/courses" class="text-sm text-gray-500 hover:text-purple-400 flex items-center gap-2 mb-6 transition-colors">
+        <NuxtLink to="/admin/courses" class="text-sm text-gray-500 hover:text-[#FAA407] flex items-center gap-2 mb-6 transition-colors">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
           Voltar para Cursos
         </NuxtLink>
@@ -448,14 +448,14 @@ async function deleteCourse() {
         <div class="flex gap-4 items-end">
           <div class="flex-1">
             <label class="block text-xs text-gray-400 mb-1">Título do Módulo</label>
-            <input v-model="newModule.title" type="text" class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-white outline-none focus:border-purple-500/50">
+            <input v-model="newModule.title" type="text" class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-white outline-none focus:border-[#FAA407]/50">
           </div>
           <div class="w-24">
             <label class="block text-xs text-gray-400 mb-1">Ordem</label>
-            <input v-model="newModule.order_index" type="number" class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-white outline-none focus:border-purple-500/50">
+            <input v-model="newModule.order_index" type="number" class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-white outline-none focus:border-[#FAA407]/50">
           </div>
           <button @click="isCreatingModule = false; editingModuleId = null" class="px-4 py-2 rounded-xl bg-transparent text-gray-400 hover:text-white transition-colors">Cancelar</button>
-          <button @click="createModule" class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white transition-colors">Salvar</button>
+          <button @click="createModule" class="px-4 py-2 rounded-xl bg-[#006E46] hover:bg-[#008266] text-white transition-colors">Salvar</button>
         </div>
       </div>
 
@@ -464,11 +464,11 @@ async function deleteCourse() {
         <div v-for="mod in modules" :key="mod.id" class="glass-card rounded-3xl border border-white/10 bg-white/[0.02] backdrop-blur-xl overflow-hidden group/mod">
           <div class="p-5 border-b border-white/5 bg-white/[0.03] flex justify-between items-center">
             <h2 class="text-xl font-semibold flex items-center gap-3">
-              <span class="text-purple-400">{{ mod.order_index }}.</span>
+              <span class="text-[#FAA407]">{{ mod.order_index }}.</span>
               {{ mod.title }}
               <button 
                 @click="startEditModule(mod)" 
-                class="p-1.5 rounded-lg hover:bg-white/5 text-gray-600 hover:text-purple-400 transition-all opacity-0 group-hover/mod:opacity-100"
+                class="p-1.5 rounded-lg hover:bg-white/5 text-gray-600 hover:text-[#FAA407] transition-all opacity-0 group-hover/mod:opacity-100"
                 title="Editar Módulo"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
@@ -489,16 +489,16 @@ async function deleteCourse() {
           </div>
 
           <!-- Content Creation/Editing Form -->
-          <div v-if="creatingContentForModule === mod.id" class="p-6 bg-purple-900/10 border-b border-purple-500/20">
-            <h4 class="text-sm font-medium text-purple-300 mb-4">{{ editingContentId ? 'Editar' : 'Novo' }} Conteúdo para "{{ mod.title }}"</h4>
+          <div v-if="creatingContentForModule === mod.id" class="p-6 bg-[#006E46]/10 border-b border-[#FAA407]/20">
+            <h4 class="text-sm font-medium text-[#FAA407] mb-4">{{ editingContentId ? 'Editar' : 'Novo' }} Conteúdo para "{{ mod.title }}"</h4>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
                 <label class="block text-xs text-gray-400 mb-1">Título da Aula/Material</label>
-                <input v-model="contentForm.title" type="text" class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-white outline-none focus:border-purple-500/50">
+                <input v-model="contentForm.title" type="text" class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-white outline-none focus:border-[#FAA407]/50">
               </div>
               <div>
                 <label class="block text-xs text-gray-400 mb-1">Tipo de Conteúdo</label>
-                <select v-model="contentForm.content_type" class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-white outline-none focus:border-purple-500/50 appearance-none">
+                <select v-model="contentForm.content_type" class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-white outline-none focus:border-[#FAA407]/50 appearance-none">
                   <option value="video">Vídeo</option>
                   <option value="document">Documento / Texto / Arquivo</option>
                 </select>
@@ -512,7 +512,7 @@ async function deleteCourse() {
               <div v-if="contentForm.content_type === 'video'" class="md:col-span-2 space-y-4">
                 <div>
                   <label class="block text-xs text-gray-400 mb-1">URL do Vídeo (YouTube, Vimeo, etc)</label>
-                  <input v-model="contentForm.video_url" type="text" placeholder="https://..." class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-white outline-none focus:border-purple-500/50">
+                  <input v-model="contentForm.video_url" type="text" placeholder="https://..." class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-white outline-none focus:border-[#FAA407]/50">
                 </div>
                 <div class="relative">
                   <div class="flex items-center gap-4 mb-2">
@@ -521,12 +521,12 @@ async function deleteCourse() {
                     <div class="h-px flex-1 bg-white/10"></div>
                   </div>
                   <label class="block text-xs text-gray-400 mb-1">Upload de Arquivo de Vídeo (Opcional se já existe)</label>
-                  <input type="file" accept="video/*" @change="handleFileUpload" class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-500/10 file:text-purple-400 hover:file:bg-purple-500/20 transition-all cursor-pointer">
+                  <input type="file" accept="video/*" @change="handleFileUpload" class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#006E46]/10 file:text-[#FAA407] hover:file:bg-[#006E46]/20 transition-all cursor-pointer">
                 </div>
                 <!-- Attachments for video -->
                 <div class="pt-4 border-t border-white/5">
                   <label class="block text-xs text-gray-400 mb-1">Adicionar Anexos para Download</label>
-                  <input type="file" multiple @change="handleAttachmentsUpload" class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-500/10 file:text-blue-400 hover:file:bg-blue-500/20 transition-all cursor-pointer">
+                  <input type="file" multiple @change="handleAttachmentsUpload" class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#008266]/10 file:text-[#008266] hover:file:bg-[#008266]/20 transition-all cursor-pointer">
                   <p v-if="attachmentsUpload.length" class="mt-2 text-[10px] text-gray-500">
                     {{ attachmentsUpload.length }} novo(s) arquivo(s) selecionado(s)
                   </p>
@@ -536,23 +536,23 @@ async function deleteCourse() {
               <div v-if="contentForm.content_type === 'document'" class="md:col-span-2 space-y-4">
                 <div>
                   <label class="block text-xs text-gray-400 mb-1">Upload de Arquivo Principal (Opcional se já existe)</label>
-                  <input type="file" @change="handleFileUpload" class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-500/10 file:text-purple-400 hover:file:bg-purple-500/20">
+                  <input type="file" @change="handleFileUpload" class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#006E46]/10 file:text-[#FAA407] hover:file:bg-[#006E46]/20">
                 </div>
                 <!-- Attachments for document -->
                 <div class="pt-4 border-t border-white/5">
                   <label class="block text-xs text-gray-400 mb-1">Adicionar Anexos Adicionais</label>
-                  <input type="file" multiple @change="handleAttachmentsUpload" class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-500/10 file:text-blue-400 hover:file:bg-blue-500/20 transition-all cursor-pointer">
+                  <input type="file" multiple @change="handleAttachmentsUpload" class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#008266]/10 file:text-[#008266] hover:file:bg-[#008266]/20 transition-all cursor-pointer">
                 </div>
               </div>
               
               <div>
                 <label class="block text-xs text-gray-400 mb-1">Ordem</label>
-                <input v-model="contentForm.order_index" type="number" class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-white outline-none focus:border-purple-500/50">
+                <input v-model="contentForm.order_index" type="number" class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-white outline-none focus:border-[#FAA407]/50">
               </div>
             </div>
             <div class="flex justify-end gap-3 mt-4">
               <button @click="creatingContentForModule = null" class="px-4 py-2 rounded-xl text-sm text-gray-400 hover:text-white transition-colors">Cancelar</button>
-              <button @click="saveContent(mod.id)" :disabled="isUploading" class="px-5 py-2 rounded-xl text-sm bg-purple-600 hover:bg-purple-500 text-white transition-colors disabled:opacity-50">
+              <button @click="saveContent(mod.id)" :disabled="isUploading" class="px-5 py-2 rounded-xl text-sm bg-[#006E46] hover:bg-[#008266] text-white transition-colors disabled:opacity-50">
                 {{ isUploading ? 'Salvando...' : 'Salvar Alterações' }}
               </button>
             </div>
@@ -584,7 +584,7 @@ async function deleteCourse() {
                 <div class="flex items-center gap-2 mt-1">
                   <span class="text-xs text-gray-500 capitalize">{{ content.content_type }}</span>
                   <span v-if="content.content_type === 'video' && formatDuration((content as any).duration)" class="text-xs text-gray-500">{{ formatDuration((content as any).duration) }}</span>
-                  <span v-if="content.file_url" class="text-xs bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded-full">Anexo</span>
+                  <span v-if="content.file_url" class="text-xs bg-[#008266]/20 text-[#008266] px-2 py-0.5 rounded-full">Anexo</span>
                   <template v-if="content.content_type === 'video' && (content as any).status">
                     <span
                       v-if="(content as any).status === 'indexed'"
@@ -611,7 +611,7 @@ async function deleteCourse() {
                   v-if="content.content_type === 'video'"
                   @click="forceTranscribe(content)"
                   :disabled="transcribingIds.has(content.id) || isUploading"
-                  class="p-2 rounded-lg bg-white/5 hover:bg-blue-500/20 text-gray-400 hover:text-blue-400 transition-all opacity-0 group-hover/item:opacity-100 disabled:opacity-30"
+                  class="p-2 rounded-lg bg-white/5 hover:bg-[#008266]/20 text-gray-400 hover:text-[#008266] transition-all opacity-0 group-hover/item:opacity-100 disabled:opacity-30"
                   title="Forçar Transcrição"
                 >
                   <svg v-if="!transcribingIds.has(content.id)" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

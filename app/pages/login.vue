@@ -46,11 +46,11 @@ async function handleSignUp() {
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#050505] text-white font-sans flex items-center justify-center p-6 selection:bg-purple-500/30">
+  <div class="min-h-screen bg-[#050505] text-white font-sans flex items-center justify-center p-6 selection:bg-[#FAA407]/30">
     <!-- Background Glows -->
     <div class="fixed inset-0 overflow-hidden pointer-events-none">
-      <div class="absolute top-[20%] left-[20%] w-[50%] h-[50%] bg-purple-600/10 blur-[120px] rounded-full"></div>
-      <div class="absolute bottom-[20%] right-[20%] w-[40%] h-[40%] bg-blue-600/10 blur-[100px] rounded-full"></div>
+      <div class="absolute top-[20%] left-[20%] w-[50%] h-[50%] bg-[#006E46]/10 blur-[120px] rounded-full"></div>
+      <div class="absolute bottom-[20%] right-[20%] w-[40%] h-[40%] bg-[#FAA407]/10 blur-[100px] rounded-full"></div>
     </div>
 
     <div class="relative z-10 w-full max-w-md">
@@ -70,7 +70,7 @@ async function handleSignUp() {
               type="email" 
               required
               placeholder="seu@email.com"
-              class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-purple-500/50 focus:bg-white/[0.08] transition-all"
+              class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-[#FAA407]/50 focus:bg-white/[0.08] transition-all"
             />
           </div>
 
@@ -81,7 +81,7 @@ async function handleSignUp() {
               type="password" 
               required
               placeholder="••••••••"
-              class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-purple-500/50 focus:bg-white/[0.08] transition-all"
+              class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-[#FAA407]/50 focus:bg-white/[0.08] transition-all"
             />
           </div>
 

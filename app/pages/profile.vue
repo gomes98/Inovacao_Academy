@@ -135,11 +135,11 @@ async function uploadAvatar(event: any) {
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#050505] text-white font-sans selection:bg-purple-500/30">
+  <div class="min-h-screen bg-[#050505] text-white font-sans selection:bg-[#FAA407]/30">
     <!-- Background Glows -->
     <div class="fixed inset-0 overflow-hidden pointer-events-none">
-      <div class="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-purple-600/20 blur-[120px] rounded-full"></div>
-      <div class="absolute bottom-[10%] -right-[10%] w-[30%] h-[30%] bg-blue-600/10 blur-[100px] rounded-full"></div>
+      <div class="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-[#006E46]/20 blur-[120px] rounded-full"></div>
+      <div class="absolute bottom-[10%] -right-[10%] w-[30%] h-[30%] bg-[#FAA407]/10 blur-[100px] rounded-full"></div>
     </div>
 
     <main class="relative z-10 max-w-2xl mx-auto p-8 pt-20">
@@ -155,8 +155,8 @@ async function uploadAvatar(event: any) {
         <!-- Loading State -->
         <div v-if="loading && !profile.name" class="flex justify-center py-20">
           <div class="relative w-12 h-12">
-            <div class="absolute inset-0 rounded-full border-2 border-purple-500/20"></div>
-            <div class="absolute inset-0 rounded-full border-2 border-transparent border-t-purple-500 animate-spin"></div>
+            <div class="absolute inset-0 rounded-full border-2 border-[#FAA407]/20"></div>
+            <div class="absolute inset-0 rounded-full border-2 border-transparent border-t-[#FAA407] animate-spin"></div>
           </div>
         </div>
 
@@ -165,7 +165,7 @@ async function uploadAvatar(event: any) {
           <!-- Avatar Section -->
           <div class="flex flex-col items-center gap-6">
             <div class="relative group">
-              <div class="w-40 h-40 rounded-full overflow-hidden border-2 border-white/10 bg-white/5 flex items-center justify-center transition-all group-hover:border-purple-500/50 shadow-2xl">
+              <div class="w-40 h-40 rounded-full overflow-hidden border-2 border-white/10 bg-white/5 flex items-center justify-center transition-all group-hover:border-[#FAA407]/50 shadow-2xl">
                 <img v-if="profile.avatar_url" :src="profile.avatar_url" class="w-full h-full object-cover" alt="Avatar">
                 <div v-else class="w-full h-full flex flex-col items-center justify-center text-gray-600 gap-2">
                   <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -176,7 +176,7 @@ async function uploadAvatar(event: any) {
                 for="avatar-upload" 
                 class="absolute inset-0 flex flex-col items-center justify-center bg-black/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all rounded-full cursor-pointer border-2 border-dashed border-white/20"
               >
-                <svg v-if="!uploading" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mb-1 text-purple-400"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+                <svg v-if="!uploading" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mb-1 text-[#FAA407]"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
                 <div v-else class="w-6 h-6 border-2 border-white/20 border-t-white animate-spin rounded-full mb-1"></div>
                 <span class="text-[10px] font-bold tracking-widest uppercase">{{ uploading ? 'Enviando...' : 'Alterar Foto' }}</span>
                 <input id="avatar-upload" type="file" class="hidden" accept="image/*" @change="uploadAvatar" :disabled="uploading">
@@ -192,7 +192,7 @@ async function uploadAvatar(event: any) {
           <div v-if="gamification.userPointsData.value" class="mb-8 p-6 rounded-3xl bg-white/[0.03] border border-white/10">
             <div class="flex items-center justify-between mb-4">
               <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-xl">
+                <div class="w-10 h-10 rounded-xl bg-[#006E46]/20 border border-[#FAA407]/30 flex items-center justify-center text-xl">
                   {{ gamification.userLevel.value.level === 1 ? '🌱' : gamification.userLevel.value.level === 2 ? '🔭' : gamification.userLevel.value.level === 3 ? '⚙️' : gamification.userLevel.value.level === 4 ? '💡' : '👑' }}
                 </div>
                 <div>
@@ -202,7 +202,7 @@ async function uploadAvatar(event: any) {
               </div>
               <div v-if="userRank" class="text-right">
                 <p class="text-xs text-gray-500 uppercase tracking-widest">Ranking do Grupo</p>
-                <p class="text-xl font-bold text-purple-300">#{{ userRank }}</p>
+                <p class="text-xl font-bold text-[#FAA407]">#{{ userRank }}</p>
               </div>
             </div>
             <div>
@@ -212,7 +212,7 @@ async function uploadAvatar(event: any) {
               </div>
               <div class="w-full h-2 bg-white/5 rounded-full overflow-hidden">
                 <div
-                  class="h-full bg-gradient-to-r from-purple-500 to-blue-500 rounded-full"
+                  class="h-full bg-gradient-to-r from-[#006E46] to-[#FAA407] rounded-full"
                   :style="{ width: `${gamification.userLevel.value.progress}%` }"
                 />
               </div>
@@ -247,7 +247,7 @@ async function uploadAvatar(event: any) {
                     v-model="profile.name"
                     type="text"
                     placeholder="Como você quer ser chamado?"
-                    class="w-full pl-12 pr-5 py-4 rounded-2xl bg-white/5 border border-white/10 focus:border-purple-500/50 focus:bg-white/[0.08] transition-all outline-none"
+                    class="w-full pl-12 pr-5 py-4 rounded-2xl bg-white/5 border border-white/10 focus:border-[#FAA407]/50 focus:bg-white/[0.08] transition-all outline-none"
                   >
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                 </div>
@@ -257,7 +257,7 @@ async function uploadAvatar(event: any) {
             <button 
               @click="updateProfile"
               :disabled="loading || uploading"
-              class="w-full py-5 rounded-2xl bg-gradient-to-r from-purple-600 to-blue-600 font-bold text-sm tracking-widest uppercase hover:from-purple-500 hover:to-blue-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-xl shadow-purple-500/20 active:scale-[0.98]"
+              class="w-full py-5 rounded-2xl bg-gradient-to-r from-[#006E46] to-[#008266] font-bold text-sm tracking-widest uppercase hover:from-[#008266] hover:to-[#FAA407] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-xl shadow-[#006E46]/20 active:scale-[0.98]"
             >
               <span v-if="!loading">Salvar Alterações</span>
               <span v-else class="flex items-center justify-center gap-2">

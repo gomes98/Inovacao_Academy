@@ -202,11 +202,11 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#050505] text-white font-sans selection:bg-purple-500/30">
+  <div class="min-h-screen bg-[#050505] text-white font-sans selection:bg-[#FAA407]/30">
     <!-- Background Glows -->
     <div class="fixed inset-0 overflow-hidden pointer-events-none">
-      <div class="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-purple-600/20 blur-[120px] rounded-full"></div>
-      <div class="absolute bottom-[10%] -right-[10%] w-[30%] h-[30%] bg-blue-600/10 blur-[100px] rounded-full"></div>
+      <div class="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-[#006E46]/20 blur-[120px] rounded-full"></div>
+      <div class="absolute bottom-[10%] -right-[10%] w-[30%] h-[30%] bg-[#FAA407]/10 blur-[100px] rounded-full"></div>
     </div>
 
     <main class="relative z-10 max-w-7xl mx-auto p-8 pt-12">
@@ -228,7 +228,7 @@ onMounted(() => {
           </button>
           <button 
             @click="openModal('create')"
-            class="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-medium transition-all shadow-[0_0_20px_-5px_rgba(168,85,247,0.4)] flex items-center gap-2"
+            class="px-5 py-2.5 rounded-xl bg-[#006E46] hover:bg-[#008266] text-white font-medium transition-all shadow-[0_0_20px_-5px_rgba(168,85,247,0.4)] flex items-center gap-2"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
             Novo Usuário
@@ -260,9 +260,9 @@ onMounted(() => {
               <tr v-for="u in users" :key="u.id" class="group hover:bg-white/[0.02] transition-colors">
                 <td class="px-6 py-4">
                   <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500/20 to-blue-500/20 border border-white/10 flex items-center justify-center shrink-0">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-[#006E46]/20 to-[#FAA407]/20 border border-white/10 flex items-center justify-center shrink-0">
                       <img v-if="u.avatar_url" :src="u.avatar_url" class="w-full h-full rounded-full object-cover">
-                      <span v-else class="text-sm font-bold text-purple-300">{{ u.name?.[0]?.toUpperCase() }}</span>
+                      <span v-else class="text-sm font-bold text-[#FAA407]">{{ u.name?.[0]?.toUpperCase() }}</span>
                     </div>
                     <div>
                       <div class="font-medium text-white">{{ u.name }}</div>
@@ -277,8 +277,8 @@ onMounted(() => {
                   <span 
                     class="px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase border"
                     :class="{
-                      'bg-purple-500/10 border-purple-500/30 text-purple-400': u.role === 'admin',
-                      'bg-blue-500/10 border-blue-500/30 text-blue-400': u.role === 'publicador',
+                      'bg-[#006E46]/10 border-[#FAA407]/30 text-[#FAA407]': u.role === 'admin',
+                      'bg-[#008266]/10 border-[#008266]/30 text-[#008266]': u.role === 'publicador',
                       'bg-gray-500/10 border-white/20 text-gray-400': u.role === 'aluno',
                       'bg-red-500/10 border-red-500/30 text-red-400': u.role === 'disabled'
                     }"
@@ -326,7 +326,7 @@ onMounted(() => {
               v-model="form.name"
               type="text"
               required
-              class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-purple-500/50 transition-all"
+              class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-[#FAA407]/50 transition-all"
               placeholder="Ex: João Silva"
             >
           </div>
@@ -337,7 +337,7 @@ onMounted(() => {
               v-model="form.email"
               type="email"
               required
-              class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-purple-500/50 transition-all"
+              class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-[#FAA407]/50 transition-all"
               placeholder="email@exemplo.com"
             >
           </div>
@@ -349,7 +349,7 @@ onMounted(() => {
               type="password"
               required
               minlength="6"
-              class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-purple-500/50 transition-all"
+              class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-[#FAA407]/50 transition-all"
               placeholder="No mínimo 6 caracteres"
             >
           </div>
@@ -363,7 +363,7 @@ onMounted(() => {
                 type="button"
                 @click="form.role = r.value"
                 class="px-3 py-2 rounded-xl border text-xs font-medium transition-all"
-                :class="form.role === r.value ? 'bg-purple-600/20 border-purple-500 text-purple-300' : 'bg-white/5 border-white/10 text-gray-500 hover:border-white/20'"
+                :class="form.role === r.value ? 'bg-[#006E46]/20 border-[#FAA407] text-[#FAA407]' : 'bg-white/5 border-white/10 text-gray-500 hover:border-white/20'"
               >
                 {{ r.label }}
               </button>
@@ -384,9 +384,9 @@ onMounted(() => {
                 ]"
                 :key="opt.value"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-xl border cursor-pointer transition-all"
-                :class="accessMode === opt.value ? 'border-purple-500/50 bg-purple-500/10' : 'border-white/5 hover:border-white/10'"
+                :class="accessMode === opt.value ? 'border-[#FAA407]/50 bg-[#006E46]/10' : 'border-white/5 hover:border-white/10'"
               >
-                <input type="radio" :value="opt.value" v-model="accessMode" class="accent-purple-500" />
+                <input type="radio" :value="opt.value" v-model="accessMode" class="accent-[#FAA407]" />
                 <span class="text-sm text-gray-200">{{ opt.label }}</span>
               </label>
             </div>
@@ -402,7 +402,7 @@ onMounted(() => {
                   type="checkbox"
                   :checked="selectedCourseIds.has(course.id)"
                   @change="toggleCourseId(course.id)"
-                  class="w-4 h-4 accent-purple-500"
+                  class="w-4 h-4 accent-[#FAA407]"
                 />
                 <span class="text-xs text-gray-300">{{ course.title }}</span>
               </label>
@@ -421,7 +421,7 @@ onMounted(() => {
                     type="checkbox"
                     :checked="selectedGroupIds.has(group.id)"
                     @change="toggleGroupId(group.id)"
-                    class="w-4 h-4 accent-purple-500"
+                    class="w-4 h-4 accent-[#FAA407]"
                   />
                   <span class="text-xs text-gray-300">{{ group.name }}</span>
                 </label>
@@ -441,7 +441,7 @@ onMounted(() => {
             <button
               type="submit"
               :disabled="loading"
-              class="flex-1 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-bold text-xs tracking-widest uppercase transition-all disabled:opacity-50"
+              class="flex-1 py-3 rounded-xl bg-gradient-to-r from-[#006E46] to-[#008266] hover:from-[#008266] hover:to-[#FAA407] text-white font-bold text-xs tracking-widest uppercase transition-all disabled:opacity-50"
             >
               {{ loading ? 'Processando...' : (modalAction === 'edit' ? 'Salvar' : 'Confirmar') }}
             </button>
