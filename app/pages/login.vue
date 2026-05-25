@@ -9,7 +9,16 @@ const password = ref('')
 const loading = ref(false)
 const errorMsg = ref('')
 const usuarioLogado = useState('usuarioLogado')
+function camposValidos() {
+  if (!email.value.trim() || !password.value.trim()) {
+    errorMsg.value = 'Preencha o e-mail e a senha para continuar.'
+    return false
+  }
+  return true
+}
+
 async function handleLogin() {
+  if (!camposValidos()) return
   try {
     loading.value = true
     errorMsg.value = ''
@@ -28,6 +37,7 @@ async function handleLogin() {
 }
 
 async function handleSignUp() {
+  if (!camposValidos()) return
   try {
     loading.value = true
     errorMsg.value = ''
