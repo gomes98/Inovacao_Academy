@@ -4,9 +4,9 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: ['@nuxtjs/supabase', '@nuxtjs/tailwindcss'],
   runtimeConfig: {
-    openaiApiKey: process.env.OPENAI_API_KEY,
-    workerUrl: process.env.WORKER_URL,
-    workerSecret: process.env.WORKER_SECRET,
+    openaiApiKey: '',
+    workerUrl: '',
+    workerSecret: '',
   },
   supabase: {
     redirect: true,
@@ -14,7 +14,12 @@ export default defineNuxtConfig({
       login: '/login',
       callback: '/confirm',
       exclude: [],
-    }
+    },
+    cookieOptions: {
+      // Set NUXT_COOKIE_SECURE=true at build time when HTTPS is configured
+      secure: process.env.NUXT_COOKIE_SECURE === 'true',
+      sameSite: 'lax',
+    },
   },
   build: {
     transpile: [

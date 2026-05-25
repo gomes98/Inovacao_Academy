@@ -3,6 +3,9 @@ FROM node:22-alpine AS builder
 
 WORKDIR /app
 
+ARG NUXT_COOKIE_SECURE=false
+ENV NUXT_COOKIE_SECURE=$NUXT_COOKIE_SECURE
+
 COPY package.json package-lock.json ./
 RUN npm install
 

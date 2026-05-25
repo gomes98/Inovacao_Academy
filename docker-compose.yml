@@ -3,12 +3,16 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        - NUXT_COOKIE_SECURE=${NUXT_COOKIE_SECURE:-false}
     ports:
       - "3000:3000"
+    env_file:
+      - .env
     environment:
-      - SUPABASE_URL=${SUPABASE_URL}
-      - SUPABASE_KEY=${SUPABASE_KEY}
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - WORKER_URL=${WORKER_URL}
-      - WORKER_SECRET=${WORKER_SECRET}
+      - NUXT_PUBLIC_SUPABASE_URL=${NUXT_PUBLIC_SUPABASE_URL}
+      - NUXT_PUBLIC_SUPABASE_KEY=${NUXT_PUBLIC_SUPABASE_KEY}
+      - NUXT_OPENAI_API_KEY=${NUXT_OPENAI_API_KEY}
+      - NUXT_WORKER_URL=${NUXT_WORKER_URL}
+      - NUXT_WORKER_SECRET=${NUXT_WORKER_SECRET}
     restart: unless-stopped
