@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__plugin_supabase_supabase__list_projects",
+      "Bash(npx -y @modelcontextprotocol/server-postgres \"postgresql://postgres.your-tenant-id:34d7bd03e8d3c2d86e64c55fb8c3ebb8@localhost:5432/postgres\")",
+      "Bash(kill %1)",
+      "Bash(npx clear-npx-cache *)",
+      "PowerShell(Remove-Item -Recurse -Force \"$env:LOCALAPPDATA\\\\npm-cache\\\\_npx\" -ErrorAction SilentlyContinue; Write-Output \"cache cleared\")",
+      "Bash(npx -y @modelcontextprotocol/server-postgres --version)",
+      "PowerShell(Remove-Item -Recurse -Force \"$env:LOCALAPPDATA\\\\npm-cache\\\\_npx\\\\cd1ce99963b5e8b1\" -ErrorAction SilentlyContinue; Write-Output \"removed\")",
+      "Bash(npx -y @modelcontextprotocol/server-postgres --help)",
+      "PowerShell(npm install -g @modelcontextprotocol/server-postgres 2>&1)",
+      "mcp__supabase__query",
+      "PowerShell($env:PGPASSWORD = \"34d7bd03e8d3c2d86e64c55fb8c3ebb8\"; psql -h localhost -p 5432 -U \"postgres.your-tenant-id\" -d postgres -c \"SELECT version\\(\\);\" 2>&1)",
+      "PowerShell(docker exec -i supabase-db psql -U postgres -d postgres -c \"SELECT version\\(\\);\" 2>&1)",
+      "PowerShell(docker exec -i supabase-db psql -U postgres -d postgres 2>&1)",
+      "PowerShell(docker exec -i supabase-db psql -U postgres -d postgres -c \"UPDATE storage.buckets SET file_size_limit = NULL WHERE id IN \\('courses', 'files', 'avatars'\\); SELECT id, file_size_limit FROM storage.buckets;\" 2>&1)",
+      "PowerShell(docker exec supabase-storage env)",
+      "Bash(docker exec *)"
+    ]
+  }
+}

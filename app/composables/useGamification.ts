@@ -2,6 +2,8 @@
 
 type EventType = 'video_watched' | 'video_completed' | 'comment_posted' | 'comment_replied'
 
+const DEFAULT_GROUP_ID = '00000000-0000-0000-0000-000000000001'
+
 interface Level {
   level: number
   name: string
@@ -113,9 +115,8 @@ export function useGamification() {
     if (badgesRes.data) userBadgesData.value = badgesRes.data as unknown as UserBadgeRow[]
     if (allBadgesRes.data) allBadgesData.value = allBadgesRes.data as BadgeRow[]
 
-    // groupId vem de user_groups (funciona mesmo antes do primeiro evento de pontos)
-    // e de user_points como fallback após eventos registrados
-    resolvedGroupId.value = groupRes.data?.group_id ?? pointsRes.data?.group_id ?? null
+    // groupId vem de user_groups; cai no grupo Geral se não houver grupo atribuído
+    resolvedGroupId.value = groupRes.data?.group_id ?? pointsRes.data?.group_id ?? DEFAULT_GROUP_ID
   }
 
   async function loadGroupRanking() {
@@ -133,13 +134,13 @@ export function useGamification() {
     if (!import.meta.client) return
     const userId = user.value?.id ?? (await supabase.auth.getUser()).data.user?.id
     if (!userId) return
-    // Se groupId ainda não foi carregado, tenta carregar agora
+    // Se groupId ainda não foi carregado, tenta carregar agora; fallback = grupo Geral
     if (!groupId.value) await loadUserData()
-    if (!groupId.value) return
+    const effectiveGroupId = groupId.value ?? DEFAULT_GROUP_ID
 
     const { error } = await supabase.from('point_events').insert({
       user_id: userId,
-      group_id: groupId.value,
+      group_id: effectiveGroupId,
       event_type: eventType,
       points: 0, // será sobrescrito pelo trigger fn_validate_point_event no banco
       reference_id: referenceId,

@@ -1,8 +1,10 @@
 {
   "mcpServers": {
     "supabase": {
-      "url": "https://mcp.supabase.com/mcp",
-      "type": "http"
+      "command": "mcp-server-postgres",
+      "args": [
+        "postgresql://postgres.your-tenant-id:34d7bd03e8d3c2d86e64c55fb8c3ebb8@localhost:5432/postgres"
+      ]
     }
   }
 }
