@@ -872,7 +872,7 @@ CREATE POLICY "users manage own streaks" ON public.user_streaks FOR ALL USING (a
 INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 VALUES
     ('avatars', 'avatars', true,  NULL,     NULL),
-    ('courses', 'courses', true,  52428800, NULL),
+    ('courses', 'courses', true,  NULL, NULL),
     ('files',   'files',   true,  NULL,     NULL)
 ON CONFLICT (id) DO NOTHING;
 
