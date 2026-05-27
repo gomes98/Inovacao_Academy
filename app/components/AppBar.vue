@@ -59,7 +59,7 @@ onMounted(() => {
   <nav class="app-bar">
     <div class="app-bar-container">
       <NuxtLink to="/" class="brand">
-        <span class="brand-text">Inovação Academy</span>
+        <span class="brand-text">Inovation Academy</span>
       </NuxtLink>
 
       <!-- Busca: só para usuários autenticados -->

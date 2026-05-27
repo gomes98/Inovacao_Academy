@@ -16,7 +16,8 @@
       "PowerShell(docker exec -i supabase-db psql -U postgres -d postgres 2>&1)",
       "PowerShell(docker exec -i supabase-db psql -U postgres -d postgres -c \"UPDATE storage.buckets SET file_size_limit = NULL WHERE id IN \\('courses', 'files', 'avatars'\\); SELECT id, file_size_limit FROM storage.buckets;\" 2>&1)",
       "PowerShell(docker exec supabase-storage env)",
-      "Bash(docker exec *)"
+      "Bash(docker exec *)",
+      "Bash(supabase migration *)"
     ]
   }
 }
