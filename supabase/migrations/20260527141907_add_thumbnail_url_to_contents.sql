@@ -1,0 +1,2 @@
+ALTER TABLE public.contents
+  ADD COLUMN IF NOT EXISTS thumbnail_url text;
