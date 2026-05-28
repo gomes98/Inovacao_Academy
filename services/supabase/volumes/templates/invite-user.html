@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Você foi convidado — Inovation Academy</title>
+</head>
+<body style="margin:0;padding:0;background-color:#050505;font-family:'Helvetica Neue',Arial,sans-serif;">
+
+  <!-- Preheader (hidden) -->
+  <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;">
+    Você foi convidado para acessar a Inovation Academy. Aceite o convite e comece a aprender.
+  </div>
+
+  <!-- Wrapper -->
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#050505;min-height:100vh;">
+    <tr>
+      <td align="center" style="padding:48px 16px;">
+
+        <!-- Card -->
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;">
+
+          <!-- Header / Logo -->
+          <tr>
+            <td align="center" style="padding-bottom:32px;">
+              <div style="display:inline-block;padding:4px 0;">
+                <span style="font-size:24px;font-weight:900;letter-spacing:-0.5px;background:linear-gradient(135deg,#ffffff 0%,#FAA407 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;color:#FAA407;">
+                  Inovation Academy
+                </span>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Main Card -->
+          <tr>
+            <td style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:48px 40px;text-align:center;">
+
+              <!-- Icon -->
+              <div style="margin-bottom:24px;">
+                <div style="display:inline-block;width:64px;height:64px;background:linear-gradient(135deg,rgba(250,164,7,0.2) 0%,rgba(0,110,70,0.2) 100%);border-radius:16px;line-height:64px;font-size:28px;">
+                  🎓
+                </div>
+              </div>
+
+              <!-- Title -->
+              <h1 style="margin:0 0 12px 0;font-size:26px;font-weight:700;color:#ffffff;letter-spacing:-0.5px;line-height:1.2;">
+                Você foi convidado!
+              </h1>
+
+              <!-- Subtitle -->
+              <p style="margin:0 0 32px 0;font-size:15px;color:rgba(255,255,255,0.55);line-height:1.6;">
+                Você recebeu um convite para acessar a <strong style="color:rgba(255,255,255,0.8);">Inovation Academy</strong>. Clique no botão abaixo para configurar sua conta e começar sua jornada de aprendizado.
+              </p>
+
+              <!-- Feature highlights -->
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:32px;">
+                <tr>
+                  <td width="33%" style="padding:0 6px 0 0;text-align:center;">
+                    <div style="padding:16px 12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;">
+                      <div style="font-size:22px;margin-bottom:8px;">🎬</div>
+                      <div style="font-size:12px;color:rgba(255,255,255,0.45);line-height:1.4;">Videoaulas em HD</div>
+                    </div>
+                  </td>
+                  <td width="33%" style="padding:0 3px;text-align:center;">
+                    <div style="padding:16px 12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;">
+                      <div style="font-size:22px;margin-bottom:8px;">🏆</div>
+                      <div style="font-size:12px;color:rgba(255,255,255,0.45);line-height:1.4;">Certificados</div>
+                    </div>
+                  </td>
+                  <td width="33%" style="padding:0 0 0 6px;text-align:center;">
+                    <div style="padding:16px 12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;">
+                      <div style="font-size:22px;margin-bottom:8px;">🔥</div>
+                      <div style="font-size:12px;color:rgba(255,255,255,0.45);line-height:1.4;">Conteúdo exclusivo</div>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- CTA Button -->
+              <a href="{{ .ConfirmationURL }}"
+                 style="display:inline-block;background:linear-gradient(135deg,#FAA407 0%,#e09000 100%);color:#050505;font-size:15px;font-weight:700;text-decoration:none;padding:14px 36px;border-radius:12px;letter-spacing:0.2px;">
+                Aceitar convite
+              </a>
+
+              <!-- Expiry notice -->
+              <p style="margin:28px 0 0 0;font-size:13px;color:rgba(255,255,255,0.35);">
+                Este convite expira em 7 dias. Se você não esperava receber este email, pode ignorá-lo com segurança.
+              </p>
+
+            </td>
+          </tr>
+
+          <!-- Fallback link -->
+          <tr>
+            <td style="padding:24px 0 0 0;text-align:center;">
+              <p style="margin:0;font-size:12px;color:rgba(255,255,255,0.25);">
+                Se o botão não funcionar, copie e cole este link no seu navegador:<br />
+                <span style="color:rgba(250,164,7,0.6);word-break:break-all;">{{ .ConfirmationURL }}</span>
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding:32px 0 0 0;text-align:center;border-top:1px solid rgba(255,255,255,0.06);margin-top:32px;">
+              <p style="margin:0;font-size:12px;color:rgba(255,255,255,0.2);line-height:1.6;">
+                © 2026 Inovation Academy · Todos os direitos reservados<br />
+                Você está recebendo este email porque foi convidado para a plataforma.
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>
