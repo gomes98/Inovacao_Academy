@@ -17,7 +17,17 @@
       "PowerShell(docker exec -i supabase-db psql -U postgres -d postgres -c \"UPDATE storage.buckets SET file_size_limit = NULL WHERE id IN \\('courses', 'files', 'avatars'\\); SELECT id, file_size_limit FROM storage.buckets;\" 2>&1)",
       "PowerShell(docker exec supabase-storage env)",
       "Bash(docker exec *)",
-      "Bash(supabase migration *)"
+      "Bash(supabase migration *)",
+      "Bash(psql \"postgresql://postgres.your-tenant-id:34d7bd03e8d3c2d86e64c55fb8c3ebb8@localhost:5432/postgres\" -c \"ALTER TABLE public.contents ADD COLUMN IF NOT EXISTS thumbnail_url text;\")",
+      "Bash(python -c \"import faster_whisper\")",
+      "Bash(python -m venv .venv)",
+      "Bash(.venv\\\\Scripts\\\\pip install *)",
+      "Bash(New-Item -ItemType File \"C:\\\\DEV\\\\Antigravity\\\\Inovacao_Academy\\\\services\\\\transcription-worker\\\\.gitignore\")",
+      "Bash(n.venv)",
+      "Bash(n__pycache__)",
+      "Bash(ndist)",
+      "Bash(n\")",
+      "Bash(Set-Content -Encoding utf8 \"C:\\\\DEV\\\\Antigravity\\\\Inovacao_Academy\\\\services\\\\transcription-worker\\\\.gitignore\" \".env`n.venv`n.cache`n__pycache__`n*.pyc`ndist`nnode_modules`n\")"
     ]
   }
 }
