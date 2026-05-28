@@ -85,9 +85,13 @@ As migrations estão em `supabase/migrations/` e devem ser aplicadas em ordem:
 | `20260520100000_search_functions.sql` | Funções de busca semântica |
 | `20260520200000_course_access_control.sql` | Controle de acesso a cursos |
 | `20260521000000_comment_replies.sql` | Respostas em comentários |
-| `20260521_fix_comments_and_private_notes.sql` | Correções em comentários e notas |
-| `20260521_fix_views_security_invoker.sql` | Segurança das views |
-| `20260521_gamification.sql` | Sistema de gamificação |
+| `20260521100000_gamification.sql` | Sistema de gamificação |
+| `20260521200000_fix_comments_and_private_notes.sql` | Correções em comentários e notas |
+| `20260521300000_fix_views_security_invoker.sql` | Segurança das views |
+| `20260526000000_fix_rls_policies.sql` | Correções nas políticas RLS |
+| `20260526000001_fix_views_security_invoker.sql` | Correções adicionais de segurança nas views |
+| `20260526000002_default_group_for_ungrouped_users.sql` | Grupo padrão para usuários sem grupo |
+| `20260527141907_add_thumbnail_url_to_contents.sql` | Adiciona thumbnail_url aos conteúdos |
 
 ---
 
@@ -163,8 +167,14 @@ cd services/transcoder-worker
 # Build da imagem
 docker build -t transcoder-worker .
 
+# Export da imagem
+docker save -o transcoder-worker.tar transcoder-worker
+
+#carregar imagem
+docker load < transcoder-worker.tar
+
 # Rodar
-docker run --env-file .env transcoder-worker
+docker run --env-file .env --restart unless-stopped transcoder-worker
 ```
 
 ### transcription-worker
@@ -177,6 +187,12 @@ cd services/transcription-worker
 # Build da imagem
 docker build -t transcription-worker .
 
+# Export da imagem
+docker save -o transcription-worker.tar transcription-worker
+
+#carregar imagem
+docker load < transcription-worker.tar
+
 # Rodar com GPU NVIDIA
 docker run --gpus all --env-file .env -p 8787:8787 transcription-worker
 
@@ -187,7 +203,7 @@ docker run --env-file .env -p 8787:8787 transcription-worker
 docker run --gpus all --env-file .env -v "$(pwd)/cacheModels:/root/.cache"  -p 8787:8787 transcription-worker
 
 # fazer cache dos modelos do whisper linux
-docker run --gpus all --env-file .env -v $(pwd)/cacheModels:/root/.cache  -p 8787:8787 transcription-worker
+docker run --gpus all --env-file .env -v $(pwd)/cacheModels:/root/.cache  -p 8787:8787 --restart unless-stopped transcription-worker
 ```
 
 ---

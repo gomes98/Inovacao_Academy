@@ -19,7 +19,7 @@ There are no test commands configured in this project.
 **Inovação Academy** is a Learning Management System (LMS) built with Nuxt 4 + Supabase.
 
 ### Stack
-- **Frontend:** Nuxt 4 (Vue 3), TypeScript, Tailwind CSS v4
+- **Frontend:** Nuxt 4 (Vue 3), TypeScript, Tailwind CSS v3
 - **Backend:** Supabase (PostgreSQL, Auth, Storage)
 - **Modules:** `@nuxtjs/supabase`, `@nuxtjs/tailwindcss`
 
@@ -34,7 +34,7 @@ There are no test commands configured in this project.
 ### Database Layer
 `app/types/database.types.ts` contains auto-generated Supabase TypeScript types. When updating schema, regenerate this file via the Supabase CLI (`supabase gen types typescript`).
 
-Key tables: `courses`, `modules`, `contents`, `comments`, `private_notes`, `perfis` (user profiles).
+Key tables: `courses`, `modules`, `contents`, `comments`, `private_notes`, `perfis` (user profiles), `attachments`, `user_progress`, `content_transcriptions`, `content_chunks`, `user_access_mode`, `user_course_access`, `permission_groups`, `group_course_access`, `user_groups`, `point_rules`, `point_events`, `user_points`, `badges`, `user_badges`, `user_streaks`.
 
 Key views used for queries (prefer these over raw table joins):
 - `course_catalog` — courses with module/content counts
@@ -59,6 +59,9 @@ Key views used for queries (prefer these over raw table joins):
 | `/lesson/[id]` | Lesson viewer — video/document + comments + private notes |
 | `/admin/courses` | Admin — list and create courses |
 | `/admin/courses/[id]` | Admin — manage modules and content, file uploads |
+| `/admin/gamification` | Admin — gamification rules and badges |
+| `/admin/groups` | Admin — permission groups management |
+| `/admin/users` | Admin — user management |
 
 ### Data Fetching Convention
 - Initial page data: `useAsyncData()` for SSR-compatible fetching
@@ -69,4 +72,4 @@ Key views used for queries (prefer these over raw table joins):
 - Dark theme: `#050505` background, white/gray text
 - Glassmorphism cards with `backdrop-blur`
 - Accent colors: purple (`#a855f7`) and blue gradients
-- Font: Inter (loaded via Google Fonts in `app.vue`)
+- Font: Barlow + Barlow Condensed (loaded via Google Fonts in `app.vue`)
