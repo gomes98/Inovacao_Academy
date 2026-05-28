@@ -125,6 +125,9 @@ A variável `NUXT_COOKIE_SECURE` é injetada em tempo de **build** (não runtime
 # Build da imagem (staging HTTP — cookie sem Secure)
 docker build -t inovacao-academy .
 
+# Export da imagem
+docker save -o inovacao-academy.tar inovacao-academy
+
 # Build da imagem (produção HTTPS — cookie com Secure)
 docker build --build-arg NUXT_COOKIE_SECURE=true -t inovacao-academy .
 
@@ -178,11 +181,13 @@ docker build -t transcription-worker .
 docker run --gpus all --env-file .env -p 8787:8787 transcription-worker
 
 # Rodar sem GPU (CPU)
-docker run --env-file .env \
-  -e WHISPER_DEVICE=cpu \
-  -e WHISPER_COMPUTE_TYPE=int8 \
-  -p 8787:8787 \
-  transcription-worker
+docker run --env-file .env -p 8787:8787 transcription-worker
+
+# fazer cache dos modelos do whisper windows
+docker run --gpus all --env-file .env -v "$(pwd)/cacheModels:/root/.cache"  -p 8787:8787 transcription-worker
+
+# fazer cache dos modelos do whisper linux
+docker run --gpus all --env-file .env -v $(pwd)/cacheModels:/root/.cache  -p 8787:8787 transcription-worker
 ```
 
 ---
