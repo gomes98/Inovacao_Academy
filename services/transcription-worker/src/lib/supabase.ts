@@ -24,14 +24,22 @@ export async function setContentStatus(contentId: string, status: ContentStatus)
   if (error) throw new Error(`Falha ao atualizar status: ${error.message}`);
 }
 
-export async function getContent(contentId: string) {
-  const { data, error } = await supabase
-    .from('contents')
-    .select('id, title, content_type, video_url, status, module_id')
-    .eq('id', contentId)
-    .single();
-  if (error) throw new Error(`Conteúdo não encontrado: ${error.message}`);
-  return data;
+export async function getContent(contentId: string, retries = 3) {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    const { data, error } = await supabase
+      .from('contents')
+      .select('id, title, content_type, video_url, status, module_id')
+      .eq('id', contentId)
+      .maybeSingle();
+
+    if (error) throw new Error(`Erro ao buscar conteúdo: ${error.message}`);
+    if (data) return data;
+
+    if (attempt < retries) {
+      await new Promise((r) => setTimeout(r, attempt * 1000));
+    }
+  }
+  throw new Error(`Conteúdo não encontrado após ${retries} tentativas: id=${contentId}`);
 }
 
 export async function hasTranscription(contentId: string): Promise<boolean> {
